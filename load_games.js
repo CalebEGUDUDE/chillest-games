@@ -1,114 +1,137 @@
-const gameList = document.getElementById('game-list');
-const gameMessage = document.getElementById('game-message');
+const repoOwner = 'CalebEGUDUDE';
+const repoName = 'game-html';
+const baseRawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/`;
+const basePagesUrl = `https://cdn.jsdelivr.net/gh/${repoOwner}/${repoName}/`;
+const placeholderIcon = baseRawUrl + 'icons/placeholder.png';
 
-function formatGameTitle(slug) {
-  const text = slug
-    .replace(/[-_]+/g, ' ')
-    .replace(/\.(html|htm)$/i, '');
-  return text.replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function createGameCard(slug) {
-  const title = formatGameTitle(slug);
-  const anchor = document.createElement('a');
-  anchor.href = `/games/${slug}.html`;
-  anchor.className = 'game-card';
-  anchor.setAttribute('aria-label', `Open ${title}`);
-
-  const icon = document.createElement('img');
-  icon.className = 'game-icon';
-  icon.alt = `${title} icon`;
-  icon.src = `/icons/${slug}.png`;
-  icon.loading = 'lazy';
-  icon.onerror = function () {
-    if (!this.src.includes('/icons/placeholder.png')) {
-      this.src = '/icons/placeholder.png';
-    }
-  };
-
-  const gameTitle = document.createElement('p');
-  gameTitle.className = 'game-title';
-  gameTitle.textContent = title;
-
-  anchor.append(icon, gameTitle);
-  return anchor;
-}
-
-function showError(message) {
-  gameList.innerHTML = '';
-  gameMessage.textContent = message;
-  gameMessage.classList.add('error-message');
-}
-
-async function fetchGameManifest() {
-  try {
-    const response = await fetch('/games/index.json');
-    if (!response.ok) {
-      return null;
-    }
-
-    const json = await response.json();
-    if (!Array.isArray(json)) {
-      return null;
-    }
-
-    return json
-      .filter((item) => typeof item === 'string')
-      .map((item) => item.replace(/\.(html|htm)$/i, ''));
-  } catch {
-    return null;
-  }
-}
+let currentGameUrl = '';
+let currentGameFile = '';
 
 async function loadGames() {
-  try {
-    let games = await fetchGameManifest();
-
-    if (!games || !games.length) {
-      const response = await fetch('/games/');
-      if (!response.ok) {
-        throw new Error(`Unable to load games: ${response.status} ${response.statusText}`);
-      }
-
-      const contentType = response.headers.get('content-type') || '';
-
-      if (contentType.includes('application/json')) {
-        const json = await response.json();
-        if (Array.isArray(json)) {
-          games = json.filter((item) => typeof item === 'string');
+    try {
+        const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/games/raw-html`);
+        const data = await response.json();
+        
+        const gamesGrid = document.getElementById('games-grid');
+        
+        for (const item of data) {
+            if (item.type === 'file' && item.name.endsWith('.html')) {
+                const gameFile = item.name;
+                const gameName = gameFile.replace('.html', '');
+                const gameUrl = basePagesUrl + 'games/raw-html/' + gameFile;
+                const iconUrl = baseRawUrl + 'icons/' + gameName + '.png';
+                
+                // Create game item
+                const gameItem = document.createElement('div');
+                gameItem.className = 'game-item';
+                
+                const img = document.createElement('img');
+                img.alt = gameName;
+                
+                // Check if icon exists
+                const testImg = new Image();
+                testImg.onload = () => {
+                    img.src = iconUrl;
+                };
+                testImg.onerror = () => {
+                    img.src = placeholderIcon;
+                };
+                testImg.src = iconUrl;
+                
+                const title = document.createElement('h3');
+                title.textContent = gameName.replace(/-/g, ' ');
+                
+                gameItem.appendChild(img);
+                gameItem.appendChild(title);
+                
+                // Add click event to load game
+                gameItem.addEventListener('click', () => {
+                    loadGame(gameUrl, gameFile);
+                });
+                
+                gamesGrid.appendChild(gameItem);
+            }
         }
-      } else {
-        const html = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const links = Array.from(doc.querySelectorAll('a[href]'));
-
-        games = links
-          .map((link) => link.getAttribute('href'))
-          .filter((href) => href && !href.startsWith('?') && !href.startsWith('#') && href !== '../')
-          .map((href) => {
-            const url = new URL(href, `${window.location.origin}/games/`);
-            return url.pathname.replace(/\/+$/g, '').split('/').pop();
-          })
-          .filter((entry) => entry && entry.toLowerCase() !== 'index.html')
-          .filter((entry) => /\.(html|htm)$/i.test(entry))
-          .map((entry) => entry.replace(/\.(html|htm)$/i, ''))
-          .filter((entry, index, self) => self.indexOf(entry) === index);
-      }
+    } catch (error) {
+        console.error('Error loading games:', error);
+        document.getElementById('games-grid').innerHTML = '<p>Error loading games.</p>';
     }
-
-    if (!games || !games.length) {
-      throw new Error('No game files were found in /games/.');
-    }
-
-    gameList.innerHTML = '';
-    games.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-    games.forEach((slug) => gameList.appendChild(createGameCard(slug)));
-    gameMessage.textContent = `${games.length} game${games.length === 1 ? '' : 's'} loaded.`;
-  } catch (error) {
-    console.error(error);
-    showError(error.message || 'Failed to load games.');
-  }
 }
 
-document.addEventListener('DOMContentLoaded', loadGames);
+function loadGame(gameUrl, gameFile) {
+    currentGameUrl = gameUrl;
+    currentGameFile = gameFile;
+    
+    // Remove existing iframe if it exists
+    const oldIframe = document.getElementById('game-iframe');
+    if (oldIframe) {
+        oldIframe.remove();
+    }
+    
+    // Create new iframe
+    const iframe = document.createElement('iframe');
+    iframe.id = 'game-iframe';
+    iframe.frameborder = '0';
+    iframe.style.width = '100%';
+    iframe.style.height = 'calc(100% - 60px)';
+    
+    const gameView = document.getElementById('game-view');
+    gameView.appendChild(iframe);
+    
+    // Fetch the HTML content and set it to iframe srcdoc
+    fetch(gameUrl)
+        .then(response => response.text())
+        .then(html => {
+            iframe.srcdoc = html;
+        })
+        .catch(error => {
+            console.error('Error loading game:', error);
+            iframe.srcdoc = '<p>Error loading game.</p>';
+        });
+    document.getElementById('games-grid').style.display = 'none';
+    document.getElementById('game-view').style.display = 'block';
+}
+
+// Event listeners for buttons
+document.getElementById('download-btn').addEventListener('click', () => {
+    fetch(currentGameUrl)
+        .then(response => response.text())
+        .then(html => {
+            const blob = new Blob([html], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = currentGameFile;
+            link.click();
+            URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+            console.error('Error downloading:', error);
+        });
+});
+
+document.getElementById('open-blank-btn').addEventListener('click', () => {
+    fetch(currentGameUrl)
+        .then(response => response.text())
+        .then(html => {
+            const blob = new Blob([html], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        })
+        .catch(error => {
+            console.error('Error opening in blank:', error);
+        });
+});
+
+document.getElementById('close-btn').addEventListener('click', () => {
+    const iframe = document.getElementById('game-iframe');
+    if (iframe) {
+        iframe.remove();
+    }
+    currentGameUrl = '';
+    currentGameFile = '';
+    document.getElementById('game-view').style.display = 'none';
+    document.getElementById('games-grid').style.display = 'grid';
+});
+
+loadGames();

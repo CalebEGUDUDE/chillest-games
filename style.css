@@ -1,107 +1,103 @@
-:root {
-  color-scheme: dark;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #0d1117;
-  color: #f0f6fc;
-}
-
-* {
-  box-sizing: border-box;
-}
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;800&display=swap');
 
 body {
-  margin: 0;
-  min-height: 100vh;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #182a69;
 }
 
-.page-shell {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem 3rem;
+h1 {
+    color: #e69138;
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 800; /* Extra bold */
 }
 
-.page-header,
-.games-title-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
+#games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.page-header h1,
-.games-title-row h2 {
-  margin: 0;
+.game-item {
+    background-color: #182a69;
+    border-radius: 8px;
+    padding: 0;
+    box-shadow: 0 2px 5px rgba(230, 145, 56, 0.6);
+    transition: transform 0.2s;
+    cursor: pointer;
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
 }
 
-.page-header p,
-.game-message {
-  margin: 0;
-  color: #8b949e;
+.game-item:hover {
+    transform: scale(1.05);
 }
 
-.games-section {
-  margin-top: 2rem;
+.game-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-.game-grid {
-  list-style: none;
-  margin: 1.5rem 0 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
+.game-item h3 {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(230, 145, 56, 0.6);
+    color: #182a69;
+    text-align: center;
+    padding: 5px;
+    margin: 0;
+    font-size: 14px;
+    font-family: jetbrains mono, monospace;
+    display: none;
 }
 
-.game-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.25rem;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  border-radius: 18px;
-  text-decoration: none;
-  background: rgba(255, 255, 255, 0.04);
-  color: inherit;
-  transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease;
+.game-item:hover h3 {
+    display: block;
 }
 
-.game-card:hover,
-.game-card:focus-visible {
-  transform: translateY(-2px);
-  border-color: rgba(100, 174, 255, 0.5);
-  background: rgba(100, 174, 255, 0.08);
+#game-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #182a69;
+    z-index: 1000;
 }
 
-.game-icon {
-  width: clamp(80px, 18vw, 120px);
-  height: clamp(80px, 18vw, 120px);
-  object-fit: contain;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.08);
-  padding: 0.75rem;
+#game-controls {
+    padding: 10px;
+    background-color: #182a69;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
-.game-title {
-  font-size: 1rem;
-  font-weight: 700;
-  text-align: center;
+#game-controls button {
+    padding: 8px 16px;
+    background-color: #e69138;
+    color: #182a69;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
-.game-description {
-  margin: 0;
-  font-size: 0.95rem;
-  color: #94a3b8;
-  text-align: center;
+#game-controls button:hover {
+    background-color: #c37b2f;
 }
 
-.no-games,
-.error-message {
-  display: block;
-  width: 100%;
-  padding: 1.5rem;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.04);
-  color: #f8fafc;
+#game-iframe {
+    width: 100%;
+    height: calc(100% - 60px);
 }
