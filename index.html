@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chillest Games</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="page-header">
+      <h1>Chillest Games</h1>
+      <p>Browse available games loaded from <code>/games</code> with icons from <code>/icons</code>.</p>
+    </header>
+
+    <section class="games-section">
+      <div class="games-title-row">
+        <h2>Game Library</h2>
+        <p id="game-message" class="game-message">Loading games…</p>
+      </div>
+      <ul id="game-list" class="game-grid" aria-live="polite"></ul>
+    </section>
+  </main>
+
+  <script src="load_games.js" defer></script>
+</body>
+</html>
