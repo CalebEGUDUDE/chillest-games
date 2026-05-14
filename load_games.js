@@ -40,41 +40,64 @@ function showError(message) {
   gameMessage.classList.add('error-message');
 }
 
+async function fetchGameManifest() {
+  try {
+    const response = await fetch('/games/index.json');
+    if (!response.ok) {
+      return null;
+    }
+
+    const json = await response.json();
+    if (!Array.isArray(json)) {
+      return null;
+    }
+
+    return json
+      .filter((item) => typeof item === 'string')
+      .map((item) => item.replace(/\.(html|htm)$/i, ''));
+  } catch {
+    return null;
+  }
+}
+
 async function loadGames() {
   try {
-    const response = await fetch('/games/');
-    if (!response.ok) {
-      throw new Error(`Unable to load games: ${response.status} ${response.statusText}`);
-    }
+    let games = await fetchGameManifest();
 
-    const contentType = response.headers.get('content-type') || '';
-    let games = [];
-
-    if (contentType.includes('application/json')) {
-      const json = await response.json();
-      if (Array.isArray(json)) {
-        games = json.filter((item) => typeof item === 'string');
+    if (!games || !games.length) {
+      const response = await fetch('/games/');
+      if (!response.ok) {
+        throw new Error(`Unable to load games: ${response.status} ${response.statusText}`);
       }
-    } else {
-      const html = await response.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-      const links = Array.from(doc.querySelectorAll('a[href]'));
 
-      games = links
-        .map((link) => link.getAttribute('href'))
-        .filter((href) => href && !href.startsWith('?') && !href.startsWith('#') && href !== '../')
-        .map((href) => {
-          const url = new URL(href, `${window.location.origin}/games/`);
-          return url.pathname.replace(/\/+$|^\/+/g, '').split('/').pop();
-        })
-        .filter((entry) => entry && entry.toLowerCase() !== 'index.html')
-        .filter((entry) => /\.(html|htm)$/i.test(entry))
-        .map((entry) => entry.replace(/\.(html|htm)$/i, ''))
-        .filter((entry, index, self) => self.indexOf(entry) === index);
+      const contentType = response.headers.get('content-type') || '';
+
+      if (contentType.includes('application/json')) {
+        const json = await response.json();
+        if (Array.isArray(json)) {
+          games = json.filter((item) => typeof item === 'string');
+        }
+      } else {
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const links = Array.from(doc.querySelectorAll('a[href]'));
+
+        games = links
+          .map((link) => link.getAttribute('href'))
+          .filter((href) => href && !href.startsWith('?') && !href.startsWith('#') && href !== '../')
+          .map((href) => {
+            const url = new URL(href, `${window.location.origin}/games/`);
+            return url.pathname.replace(/\/+$/g, '').split('/').pop();
+          })
+          .filter((entry) => entry && entry.toLowerCase() !== 'index.html')
+          .filter((entry) => /\.(html|htm)$/i.test(entry))
+          .map((entry) => entry.replace(/\.(html|htm)$/i, ''))
+          .filter((entry, index, self) => self.indexOf(entry) === index);
+      }
     }
 
-    if (!games.length) {
+    if (!games || !games.length) {
       throw new Error('No game files were found in /games/.');
     }
 
