@@ -6,56 +6,80 @@ const placeholderIcon = baseRawUrl + 'icons/placeholder.png';
 
 let currentGameUrl = '';
 let currentGameFile = '';
+const gamesGrid = document.getElementById('games-grid');
+const searchInput = document.getElementById('search-input');
+const noResults = document.getElementById('no-results');
+let allGameItems = [];
+
+function filterGames(query) {
+    const normalized = query.trim().toLowerCase();
+    let visibleCount = 0;
+
+    for (const { gameName, element } of allGameItems) {
+        const isMatch = !normalized || gameName.includes(normalized);
+        element.style.display = isMatch ? '' : 'none';
+        if (isMatch) visibleCount += 1;
+    }
+
+    noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+}
 
 async function loadGames() {
     try {
         const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/games/raw-html`);
-        const data = await response.json();
-        
-        const gamesGrid = document.getElementById('games-grid');
-        
-        for (const item of data) {
-            if (item.type === 'file' && item.name.endsWith('.html')) {
-                const gameFile = item.name;
-                const gameName = gameFile.replace('.html', '');
-                const gameUrl = basePagesUrl + 'games/raw-html/' + gameFile;
-                const iconUrl = baseRawUrl + 'icons/' + gameName + '.png';
-                
-                // Create game item
-                const gameItem = document.createElement('div');
-                gameItem.className = 'game-item';
-                
-                const img = document.createElement('img');
-                img.alt = gameName;
-                
-                // Check if icon exists
-                const testImg = new Image();
-                testImg.onload = () => {
-                    img.src = iconUrl;
-                };
-                testImg.onerror = () => {
-                    img.src = placeholderIcon;
-                };
-                testImg.src = iconUrl;
-                
-                const title = document.createElement('h3');
-                title.textContent = gameName.replace(/-/g, ' ');
-                
-                gameItem.appendChild(img);
-                gameItem.appendChild(title);
-                
-                // Add click event to load game
-                gameItem.addEventListener('click', () => {
-                    loadGame(gameUrl, gameFile);
-                });
-                
-                gamesGrid.appendChild(gameItem);
-            }
+        if (!response.ok) {
+            throw new Error(`GitHub API returned ${response.status}`);
         }
+
+        const data = await response.json();
+        const gameFiles = data.filter(item => item.type === 'file' && item.name.endsWith('.html'));
+
+        allGameItems = [];
+        gamesGrid.innerHTML = '';
+
+        for (const item of gameFiles) {
+            const gameFile = item.name;
+            const gameName = gameFile.slice(0, -5);
+            const prettyName = gameName.replace(/[-_]/g, ' ');
+            const gameUrl = `${basePagesUrl}games/raw-html/${gameFile}`;
+            const iconUrl = `${baseRawUrl}icons/${gameName}.png`;
+
+            const gameItem = createGameItem(prettyName, iconUrl, () => loadGame(gameUrl, gameFile));
+            allGameItems.push({ gameName: gameName.toLowerCase(), element: gameItem });
+            gamesGrid.appendChild(gameItem);
+        }
+
+        filterGames(searchInput.value || '');
     } catch (error) {
         console.error('Error loading games:', error);
-        document.getElementById('games-grid').innerHTML = '<p>Error loading games.</p>';
+        gamesGrid.innerHTML = '<p>Error loading games.</p>';
     }
+}
+
+function createGameItem(titleText, iconUrl, onClick) {
+    const gameItem = document.createElement('div');
+    gameItem.className = 'game-item';
+
+    const img = document.createElement('img');
+    img.alt = titleText;
+    img.src = placeholderIcon;
+    loadIcon(img, iconUrl);
+
+    const title = document.createElement('h3');
+    title.textContent = titleText;
+
+    gameItem.appendChild(img);
+    gameItem.appendChild(title);
+    gameItem.addEventListener('click', onClick);
+
+    return gameItem;
+}
+
+function loadIcon(img, iconUrl) {
+    const testImg = new Image();
+    testImg.onload = () => { img.src = iconUrl; };
+    testImg.onerror = () => { img.src = placeholderIcon; };
+    testImg.src = iconUrl;
 }
 
 function loadGame(gameUrl, gameFile) {
@@ -133,5 +157,11 @@ document.getElementById('close-btn').addEventListener('click', () => {
     document.getElementById('game-view').style.display = 'none';
     document.getElementById('games-grid').style.display = 'grid';
 });
+
+if (searchInput) {
+    searchInput.addEventListener('input', event => {
+        filterGames(event.target.value);
+    });
+}
 
 loadGames();
