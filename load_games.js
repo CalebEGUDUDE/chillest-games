@@ -6,10 +6,13 @@ const placeholderIcon = baseRawUrl + 'icons/placeholder.png';
 
 let currentGameUrl = '';
 let currentGameFile = '';
+let selectedCategory = null;
 const gamesGrid = document.getElementById('games-grid');
 const searchInput = document.getElementById('search-input');
+const categoriesContainer = document.getElementById('categories-container');
 const noResults = document.getElementById('no-results');
 let allGameItems = [];
+let allCategories = [];
 
 function loadSplashText() {
     const header = document.querySelector('h1');
@@ -44,9 +47,57 @@ function filterGames(query) {
     noResults.style.display = visibleCount === 0 ? 'block' : 'none';
 }
 
-async function loadGames() {
+async function loadCategories() {
     try {
-        const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/games/raw-html`);
+        const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/games`);
+        if (!response.ok) {
+            throw new Error(`GitHub API returned ${response.status}`);
+        }
+
+        const data = await response.json();
+        const categories = data.filter(item => item.type === 'dir').map(item => item.name);
+        allCategories = categories;
+
+        categoriesContainer.innerHTML = '';
+        
+        // Add "All" button
+        const allButton = document.createElement('button');
+        allButton.textContent = 'All';
+        allButton.style.fontWeight = 'bold';
+        allButton.addEventListener('click', () => {
+            selectedCategory = 'All';
+            document.querySelectorAll('#categories-container button').forEach(btn => {
+                btn.style.fontWeight = btn === allButton ? 'bold' : 'normal';
+            });
+            loadAllGames();
+        });
+        categoriesContainer.appendChild(allButton);
+        
+        for (const category of categories) {
+            const button = document.createElement('button');
+            button.textContent = category;
+            button.addEventListener('click', () => {
+                selectedCategory = category;
+                document.querySelectorAll('#categories-container button').forEach(btn => {
+                    btn.style.fontWeight = btn === button ? 'bold' : 'normal';
+                });
+                loadGames(category);
+            });
+            categoriesContainer.appendChild(button);
+        }
+
+        // Load all games by default
+        selectedCategory = 'All';
+        loadAllGames();
+    } catch (error) {
+        console.error('Error loading categories:', error);
+        categoriesContainer.innerHTML = '<p>Error loading categories.</p>';
+    }
+}
+
+async function loadGames(category) {
+    try {
+        const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/games/${category}`);
         if (!response.ok) {
             throw new Error(`GitHub API returned ${response.status}`);
         }
@@ -61,7 +112,7 @@ async function loadGames() {
             const gameFile = item.name;
             const gameName = gameFile.slice(0, -5);
             const prettyName = gameName.replace(/[-_]/g, ' ');
-            const gameUrl = `${basePagesUrl}games/raw-html/${gameFile}`;
+            const gameUrl = `${basePagesUrl}games/${category}/${gameFile}`;
             const iconUrl = `${baseRawUrl}icons/${gameName}.png`;
 
             const gameItem = createGameItem(prettyName, iconUrl, () => loadGame(gameUrl, gameFile));
@@ -72,6 +123,38 @@ async function loadGames() {
         filterGames(searchInput.value || '');
     } catch (error) {
         console.error('Error loading games:', error);
+        gamesGrid.innerHTML = '<p>Error loading games.</p>';
+    }
+}
+
+async function loadAllGames() {
+    try {
+        allGameItems = [];
+        gamesGrid.innerHTML = '';
+
+        for (const category of allCategories) {
+            const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/games/${category}`);
+            if (!response.ok) continue;
+
+            const data = await response.json();
+            const gameFiles = data.filter(item => item.type === 'file' && item.name.endsWith('.html'));
+
+            for (const item of gameFiles) {
+                const gameFile = item.name;
+                const gameName = gameFile.slice(0, -5);
+                const prettyName = gameName.replace(/[-_]/g, ' ');
+                const gameUrl = `${basePagesUrl}games/${category}/${gameFile}`;
+                const iconUrl = `${baseRawUrl}icons/${gameName}.png`;
+
+                const gameItem = createGameItem(prettyName, iconUrl, () => loadGame(gameUrl, gameFile));
+                allGameItems.push({ gameName: gameName.toLowerCase(), element: gameItem });
+                gamesGrid.appendChild(gameItem);
+            }
+        }
+
+        filterGames(searchInput.value || '');
+    } catch (error) {
+        console.error('Error loading all games:', error);
         gamesGrid.innerHTML = '<p>Error loading games.</p>';
     }
 }
@@ -180,9 +263,14 @@ document.getElementById('close-btn').addEventListener('click', () => {
 
 if (searchInput) {
     searchInput.addEventListener('input', event => {
-        filterGames(event.target.value);
+        const query = event.target.value;
+        if (query.toLowerCase().trim() === 'never gonna give you up') {
+            window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+            return;
+        }
+        filterGames(query);
     });
 }
 
 loadSplashText();
-loadGames();
+loadCategories();
