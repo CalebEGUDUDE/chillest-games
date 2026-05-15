@@ -12,6 +12,11 @@ h1 {
     font-weight: 800; /* Extra bold */
 }
 
+p{
+    color: #e6a158;
+    font-family: 'jetbrains mono', monospace;
+}
+
 .search-container {
     max-width: 600px;
     margin: 0 auto 15px;
@@ -64,6 +69,7 @@ h1 {
     position: relative;
     aspect-ratio: 1;
     overflow: hidden;
+    font-family: 'jetbrains mono', monospace;
 }
 
 .game-item:hover {
@@ -115,6 +121,7 @@ h1 {
     display: flex;
     justify-content: center;
     gap: 10px;
+    font-family: 'jetbrains mono', monospace;
 }
 
 #game-controls button {
@@ -124,6 +131,7 @@ h1 {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-family: 'jetbrains mono', monospace;
 }
 
 #game-controls button:hover {

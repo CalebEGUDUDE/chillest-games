@@ -11,6 +11,26 @@ const searchInput = document.getElementById('search-input');
 const noResults = document.getElementById('no-results');
 let allGameItems = [];
 
+function loadSplashText() {
+    const header = document.querySelector('h1');
+    if (!header) return;
+
+    fetch('assets/text.json')
+        .then(response => response.json())
+        .then(data => {
+            const splashes = Array.isArray(data.splashes) ? data.splashes : [];
+            if (!splashes.length) return;
+
+            const splashText = splashes[Math.floor(Math.random() * splashes.length)];
+            const splashElement = document.createElement('p');
+            splashElement.textContent = splashText;
+            header.insertAdjacentElement('afterend', splashElement);
+        })
+        .catch(error => {
+            console.warn('Unable to load splash text:', error);
+        });
+}
+
 function filterGames(query) {
     const normalized = query.trim().toLowerCase();
     let visibleCount = 0;
@@ -164,4 +184,5 @@ if (searchInput) {
     });
 }
 
+loadSplashText();
 loadGames();
