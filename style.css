@@ -66,7 +66,7 @@ p{
 }
 
 #search-input:focus {
-    border-color: #e69138;
+    border-color: rgb(230, 145, 56);
     background: rgba(255, 255, 255, 0.16);
 }
 
@@ -169,4 +169,21 @@ p{
 #game-iframe {
     width: 100%;
     height: calc(100% - 60px);
+}
+
+#categories-container reload {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #e69138;
+    border: 1px solid rgba(230, 145, 56, 0.5);
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'jetbrains mono', monospace;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+#categories-container reload:hover {
+    background: rgba(230, 145, 56, 0.2);
+    border-color: #e69138;
 }

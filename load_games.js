@@ -86,6 +86,24 @@ async function loadCategories() {
             categoriesContainer.appendChild(button);
         }
 
+        // Add "Reload" button next to categories
+        const reloadButton = document.createElement('reload');
+        const reloadImg = document.createElement('img');
+        reloadImg.src = 'chillest-gamess/assets/reload.png';
+        reloadImg.width = 20;
+        reloadButton.title = 'Reload categories and games';
+        reloadButton.addEventListener('click', () => {
+            if (selectedCategory === 'All') {
+                loadAllGames();
+            } else if (selectedCategory) {
+                loadGames(selectedCategory);
+            } else {
+                loadCategories();
+            }
+        });
+        categoriesContainer.appendChild(reloadButton);
+        reloadButton.appendChild(reloadImg);
+
         // Load all games by default
         selectedCategory = 'All';
         loadAllGames();
