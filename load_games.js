@@ -58,9 +58,11 @@ window.applyPresetCloak = function(title, iconUrl) {
 };
 
 // Reverts the tab settings back to default configuration
+// Reverts the tab settings back to default configuration
 window.resetCloak = function() {
     document.title = "Chillest Games";
-    setFavicon("assets/favicon.png"); // <-- Updated to your new assets path
+    // Updated to target the remote repository asset path
+    setFavicon(baseRawUrl + "assets/favicon.png"); 
     localStorage.removeItem('cloakTitle');
     localStorage.removeItem('cloakIcon');
     customTitleInput.value = '';
@@ -218,7 +220,8 @@ function loadSplashText() {
     const header = document.querySelector('h1');
     if (!header) return;
 
-    fetch('assets/text.json')
+    // FIX: Replaced 'assets/text.json' with baseRawUrl + 'assets/text.json'
+    fetch(baseRawUrl + 'assets/text.json')
         .then(response => response.json())
         .then(data => {
             const splashes = Array.isArray(data.splashes) ? data.splashes : [];
@@ -297,18 +300,17 @@ async function loadCategories() {
             categoriesContainer.appendChild(button);
         }
 
-        // Add "Reload" button next to categories
+        // Locate where the Reload button is constructed inside loadCategories()
         const reloadButton = document.createElement('button'); 
         const reloadImg = document.createElement('img');
 
-        reloadImg.src = 'assets/refresh.png'; 
+        // Updated to pull refresh.png from your GitHub repository raw CDN
+        reloadImg.src = baseRawUrl + 'assets/refresh.png'; 
         reloadImg.width = 20;
         
-        // NEW: Configure the transition duration and ease-out timing curve directly on the image asset
         reloadImg.style.transition = 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)'; 
-
         reloadButton.title = 'Reload categories and games';
-        reloadButton.className = 'reload-btn'; 
+        reloadButton.className = 'reload-btn';
 
         // NEW: Keep track of the total rotation degrees across multiple separate clicks
         let currentRotation = 0;
