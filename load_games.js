@@ -87,11 +87,17 @@ async function loadCategories() {
         }
 
         // Add "Reload" button next to categories
-        const reloadButton = document.createElement('reload');
+        const reloadButton = document.createElement('button'); 
         const reloadImg = document.createElement('img');
-        reloadImg.src = 'chillest-gamess/assets/reload.png';
-        reloadImg.width = 20;
+
+        // 1. Corrected file name
+        reloadImg.src = 'assets/refresh.png'; 
+        reloadImg.width = 15;
+
         reloadButton.title = 'Reload categories and games';
+        reloadButton.className = 'reload-btn'; 
+
+        // 2. Fixed syntax and removed duplicate logic
         reloadButton.addEventListener('click', () => {
             if (selectedCategory === 'All') {
                 loadAllGames();
@@ -101,12 +107,15 @@ async function loadCategories() {
                 loadCategories();
             }
         });
-        categoriesContainer.appendChild(reloadButton);
+
+        // Append the image to the button FIRST, then the button to the container
         reloadButton.appendChild(reloadImg);
+        categoriesContainer.appendChild(reloadButton);
 
         // Load all games by default
         selectedCategory = 'All';
         loadAllGames();
+
     } catch (error) {
         console.error('Error loading categories:', error);
         categoriesContainer.innerHTML = '<p>Error loading categories.</p>';
@@ -114,34 +123,73 @@ async function loadCategories() {
 }
 
 async function loadGames(category) {
+    // 1. Fail-safe checks for your config variables
+    const owner = typeof repoOwner !== 'undefined' ? repoOwner : 'YOUR_DEFAULT_OWNER';
+    const repo = typeof repoName !== 'undefined' ? repoName : 'YOUR_DEFAULT_REPO';
+
+    if (!category) {
+        console.error("loadGames failed: 'category' parameter is missing or undefined.");
+        gamesGrid.innerHTML = '<p>Error: No category provided.</p>';
+        return;
+    }
+
     try {
-        const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/games/${category}`);
+        // 2. Build URL safely
+        const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/games/${category}`;
+        
+        // 3. Execute Fetch
+        const response = await fetch(apiUrl);
+        
         if (!response.ok) {
-            throw new Error(`GitHub API returned ${response.status}`);
+            // Check if you hit GitHub's unauthenticated rate limit (60 requests/hour)
+            if (response.status === 403) {
+                throw new Error("GitHub API rate limit exceeded. Try again later.");
+            }
+            throw new Error(`GitHub API returned status: ${response.status}`);
         }
 
         const data = await response.json();
+        // Filter only HTML files
         const gameFiles = data.filter(item => item.type === 'file' && item.name.endsWith('.html'));
 
-        allGameItems = [];
-        gamesGrid.innerHTML = '';
+        // Fix: Explicitly declare allGameItems if not done globally
+        allGameItems = []; 
+        gamesGrid.innerHTML = ''; // Clear the grid for incoming items
 
         for (const item of gameFiles) {
             const gameFile = item.name;
-            const gameName = gameFile.slice(0, -5);
+            const gameName = gameFile.slice(0, -5); // Removes '.html'
             const prettyName = gameName.replace(/[-_]/g, ' ');
             const gameUrl = `${basePagesUrl}games/${category}/${gameFile}`;
             const iconUrl = `${baseRawUrl}icons/${gameName}.png`;
 
+            // Create the element
             const gameItem = createGameItem(prettyName, iconUrl, () => loadGame(gameUrl, gameFile));
-            allGameItems.push({ gameName: gameName.toLowerCase(), element: gameItem });
-            gamesGrid.appendChild(gameItem);
+            
+            // Push to our master tracking array
+            allGameItems.push({ 
+                gameName: gameName.toLowerCase(), 
+                prettyName: prettyName.toLowerCase(), // Helpful for search indexing
+                element: gameItem 
+            });
         }
 
-        filterGames(searchInput.value || '');
+        // Check if there's an active search query
+        const searchQuery = searchInput ? searchInput.value.trim() : '';
+        
+        if (searchQuery) {
+            // If user is searching, let the filter function handle what gets appended
+            filterGames(searchQuery);
+        } else {
+            // If no search, append all items efficiently using a DocumentFragment
+            const fragment = document.createDocumentFragment();
+            allGameItems.forEach(item => fragment.appendChild(item.element));
+            gamesGrid.appendChild(fragment);
+        }
+
     } catch (error) {
         console.error('Error loading games:', error);
-        gamesGrid.innerHTML = '<p>Error loading games.</p>';
+        gamesGrid.innerHTML = '<p class="error-msg">Error loading games. Please try again.</p>';
     }
 }
 

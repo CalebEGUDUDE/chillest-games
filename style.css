@@ -175,8 +175,8 @@ p{
     padding: 8px 16px;
     background: rgba(255, 255, 255, 0.1);
     color: #e69138;
-    border: 1px solid rgba(230, 145, 56, 0.5);
-    border-radius: 5px;
+    border: 1px solid #e69138;
+    border-radius: 999px;
     cursor: pointer;
     font-family: 'jetbrains mono', monospace;
     font-size: 14px;
