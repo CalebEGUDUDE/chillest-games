@@ -4,16 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chillest Games</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="top-bar">
+        <button id="settings-btn" class="icon-btn" title="Open Settings">
+            <img src="assets/settings.png" alt="Settings" class="settings-icon-img" width="20" />
+        </button>
+    </div>
+
     <h1>Chillest Games</h1>
     <div class="search-container">
         <input id="search-input" type="search" placeholder="Search games..." />
     </div>
-    <div id="categories-container"></div>
+    
+    <div id="controls-row" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        <div id="categories-container"></div>
+    </div>
+
+    <div id="settings-view" class="modal">
+        <div class="modal-content">
+            <span id="close-settings-x" class="close-modal">&times;</span>
+            <h2>Tab Cloak Settings</h2>
+            <hr>
+            
+            <div class="setting-item">
+                <label>Preset Cloaks:</label>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button onclick="applyPresetCloak('Google', 'https://www.google.com/favicon.ico')">Google</button>
+                    <button onclick="applyPresetCloak('Google Drive', 'https://ssl.gstatic.com/docs/doclist/images/drive_2020q4_32dp.png')">Google Drive</button>
+                    <button onclick="applyPresetCloak('Canvas', 'https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico')">Canvas</button>
+                    <button onclick="resetCloak()" class="danger-btn">Reset</button>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <label for="custom-title">Custom Tab Title:</label>
+                <input type="text" id="custom-title" placeholder="e.g., Home" />
+            </div>
+            
+            <div class="setting-item">
+                <label for="custom-icon">Custom Favicon URL:</label>
+                <input type="text" id="custom-icon" placeholder="e.g., https://example.com/favicon.ico" />
+            </div>
+
+            <div class="setting-item" style="margin-bottom: 25px;">
+                <label>Backup & Restore:</label>
+                <div style="display: flex; gap: 8px;">
+                    <button id="export-settings-btn" type="button">📤 Export Config</button>
+                    
+                    <input type="file" id="import-settings-file" accept=".json" style="display: none;" />
+                    <button id="import-settings-btn" type="button">📥 Import Config</button>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button id="close-settings-btn">Cancel</button>
+                <button id="save-cloak-btn" class="primary-btn">Save Cloak</button>
+            </div>
+        </div>
+    </div>
+
     <div id="games-grid"></div>
     <div id="no-results" class="no-results" style="display: none;">No games found.</div>
+    
     <div id="game-view" style="display: none;">
         <div id="game-controls">
             <button id="download-btn">Download</button>
@@ -21,6 +76,12 @@
             <button id="close-btn">Close</button>
         </div>
     </div>
+    
     <script src="load_games.js"></script>
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="https://github.com/calebegudude/chillest-games">Github</a>
+        &emsp;
+        <a href="https://forms.gle/wijQsMD58NNdGARC8">Suggest</a>
+    </div>
 </body>
 </html>

@@ -46,6 +46,7 @@ p{
 #categories-container button:hover {
     background: rgba(230, 145, 56, 0.2);
     border-color: #e69138;
+    transform: scale(1.1);
 }
 
 #search-input {
@@ -164,6 +165,7 @@ p{
 
 #game-controls button:hover {
     background-color: #c37b2f;
+    transform: scale(1.1);
 }
 
 #game-iframe {
@@ -186,4 +188,176 @@ p{
 #categories-container reload:hover {
     background: rgba(230, 145, 56, 0.2);
     border-color: #e69138;
+}
+
+a {
+    color: #d8964e;
+    font-size: 24px;
+    font-family: 'jetbrains mono', monospace;
+}
+
+/* Modal Background Overlay (Centered & Blurred) */
+.modal {
+  display: none; 
+  position: fixed;
+  z-index: 2000; /* Ensures it sits above game view elements */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(24, 42, 105, 0.4); /* Semitransparent theme background */
+  backdrop-filter: blur(8px); /* Blurs the elements behind the modal window */
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal Box Content */
+.modal-content {
+  background-color: #182a69; /* Matches body background color */
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(230, 145, 56, 0.4); /* Themed orange shadow glow */
+  border: 2px solid #e69138; /* Orange themed border outline */
+  position: relative;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+/* Modal Title Elements */
+.modal-content h2 {
+  color: #e69138;
+  font-family: 'Unbounded', sans-serif;
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+
+/* Divider Rule lines */
+.modal-content hr {
+  border: 0;
+  height: 1px;
+  background: rgba(230, 145, 56, 0.3);
+  margin: 15px 0;
+}
+
+/* Text Element tags inside modal */
+.modal-content label {
+  color: #e6a158;
+  font-family: 'jetbrains mono', monospace;
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+/* Input boxes modified to mimic the main game search field design styling */
+.modal-content input[type="text"] {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  outline: none;
+  font-size: 14px;
+  font-family: 'jetbrains mono', monospace;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.modal-content input[type="text"]:focus {
+  border-color: rgb(230, 145, 56);
+}
+
+/* Modal configuration item wrapper boxes */
+.setting-item {
+  margin: 20px 0;
+}
+
+/* Custom styled action buttons matching category selectors */
+.modal-content button {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e69138;
+  border: 1px solid rgba(230, 145, 56, 0.5);
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: 'jetbrains mono', monospace;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.modal-content button:hover {
+  background: rgba(230, 145, 56, 0.2);
+  border-color: #e69138;
+}
+
+/* Core action execution buttons */
+.modal-content button.primary-btn {
+  background-color: #e69138;
+  color: #182a69;
+  border: none;
+  font-weight: bold;
+}
+
+.modal-content button.primary-btn:hover {
+  background-color: #c37b2f;
+}
+
+.modal-content button.danger-btn {
+  background-color: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+  border: 1px solid #f44336;
+}
+
+.modal-content button.danger-btn:hover {
+  background-color: #f44336;
+  color: #fff;
+}
+
+/* Close Button (X in the top corner) */
+.close-modal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  color: #e6a158;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-modal:hover {
+  color: #e69138;
+}
+
+/* Position the button wrapper in the top right corner */
+.top-bar {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 100;
+}
+
+/* Styled emoji button that blends with your theme */
+.icon-btn {
+  font-size: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e69138;
+  border: 1px solid rgba(230, 145, 56, 0.5);
+  border-radius: 50%; /* Perfect circle */
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+/* Subtle clockwise rotation and orange glow on hover */
+.icon-btn:hover {
+  transform: scale(1.1);
+  background: rgba(230, 145, 56, 0.2);
+  border-color: #e69138;
 }
