@@ -29,7 +29,7 @@ const customIconInput = document.getElementById('custom-icon');
 // ==========================================
 // VERSION CHECKER
 // ==========================================
-const CURRENT_VERSION = "1.0.1"; // Increment this when you update your local site code
+const CURRENT_VERSION = "1.0.2"; // Increment this when you update your local site code
 
 async function checkProjectVersion() {
     try {
