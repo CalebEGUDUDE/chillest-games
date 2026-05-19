@@ -561,7 +561,7 @@ function loadGame(gameUrl, gameFile) {
     iframe.id = 'game-iframe';
     iframe.frameBorder = '0';
     iframe.style.width = '100%';
-    iframe.style.height = 'calc(100% - 60px)';
+    iframe.style.height = 'calc(100% - 100px)'; // Adjusted to leave room for the bottom credits bar
     
     const gameView = document.getElementById('game-view');
     gameView.appendChild(iframe);
@@ -575,6 +575,53 @@ function loadGame(gameUrl, gameFile) {
             console.error('Error loading game:', error);
             iframe.srcdoc = '<p>Error loading game.</p>';
         });
+
+    // ==========================================
+    // DYNAMIC CREDITS FETCH LOGIC
+    // ==========================================
+    const gameName = gameFile.slice(0, -5); // Extract clean game name without '.html'
+    
+    // Reset indicators to loading state first
+    document.getElementById('credit-value').textContent = 'Loading...';
+    document.getElementById('idea-value').textContent = 'Loading...';
+
+    // We can derive the category by analyzing the full gameUrl path
+    // Format: .../games/CategoryName/GameName.html
+    const urlParts = gameUrl.split('/');
+    const categoryName = urlParts[urlParts.length - 2];
+
+    // Build paths pointing to where your data configuration JSONs live per game
+    const creditsUrl = `${baseRawUrl}games/${categoryName}/credits.json`;
+    const ideasUrl = `${baseRawUrl}games/${categoryName}/ideas.json`;
+
+    // Fetch Credits Data
+    fetch(creditsUrl)
+        .then(res => {
+            if (!res.ok) throw new Error();
+            return res.json();
+        })
+        .then(data => {
+            // Looks for a key matching the game name inside credits.json
+            document.getElementById('credit-value').textContent = data[gameName] || 'Unknown';
+        })
+        .catch(() => {
+            document.getElementById('credit-value').textContent = 'Unknown';
+        });
+
+    // Fetch Ideas Data
+    fetch(ideasUrl)
+        .then(res => {
+            if (!res.ok) throw new Error();
+            return res.json();
+        })
+        .then(data => {
+            // Looks for a key matching the game name inside ideas.json
+            document.getElementById('idea-value').textContent = data[gameName] || 'Unknown';
+        })
+        .catch(() => {
+            document.getElementById('idea-value').textContent = 'Unknown';
+        });
+
     document.getElementById('games-grid').style.display = 'none';
     document.getElementById('game-view').style.display = 'block';
 }

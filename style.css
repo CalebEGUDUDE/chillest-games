@@ -380,3 +380,24 @@ a {
     from { transform: translateY(-100%); }
     to { transform: translateY(0); }
 }
+
+/* Game View Credits Panel */
+#game-credits-panel {
+    background-color: #142254; /* Slightly darker shade of body blue */
+    color: #e6a158;
+    padding: 10px;
+    font-family: 'jetbrains mono', monospace;
+    font-size: 14px;
+    text-align: center;
+    border-top: 1px solid rgba(230, 145, 56, 0.3);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    box-sizing: border-box;
+}
+
+#game-credits-panel strong {
+    color: #e69138; /* Accent pop orange */
+}
