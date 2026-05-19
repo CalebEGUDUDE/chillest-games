@@ -27,6 +27,77 @@ const customTitleInput = document.getElementById('custom-title');
 const customIconInput = document.getElementById('custom-icon');
 
 // ==========================================
+// VERSION CHECKER
+// ==========================================
+const CURRENT_VERSION = "1.0.1"; // Increment this when you update your local site code
+
+async function checkProjectVersion() {
+    try {
+        // Fetches from your GitHub repo using your base raw URL pathing
+        const response = await fetch(baseRawUrl + 'version.json');
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const remoteVersion = data.version;
+
+        if (!remoteVersion) return;
+
+        // Helper function to turn version strings (e.g., "1.2.3") into comparable numbers
+        const parseVersion = (v) => v.split('.').map(Number);
+        const localParts = parseVersion(CURRENT_VERSION);
+        const remoteParts = parseVersion(remoteVersion);
+
+        let isOutdated = false;
+        let isTampered = false;
+
+        // Compare the major, minor, and patch versions sequentially
+        for (let i = 0; i < Math.max(localParts.length, remoteParts.length); i++) {
+            const localVal = localParts[i] || 0;
+            const remoteVal = remoteParts[i] || 0;
+
+            if (localVal < remoteVal) {
+                isOutdated = true;
+                break;
+            } else if (localVal > remoteVal) {
+                isTampered = true;
+                break;
+            }
+        }
+
+        // Handle cases based on the comparison result
+        if (isOutdated || isTampered) {
+            const updateBanner = document.createElement('div');
+            updateBanner.id = 'update-warning-banner';
+
+            if (isOutdated) {
+                // Banner for older/outdated versions
+                console.log(`[Version Check] Website outdated. Remote: ${remoteVersion} | Local: ${CURRENT_VERSION}`);
+                updateBanner.innerHTML = `
+                    <div style="font-size: 24px; font-weight: 800; font-family: 'Unbounded', sans-serif; margin-bottom: 5px;">Uh oh...</div>
+                    <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">This website is outdated!</div>
+                    <div style="font-size: 14px; opacity: 0.9;">re-follow the instructions on the launcher.</div>
+                `;
+            } else if (isTampered) {
+                // Banner if the local version string is HIGHER than the remote repository
+                console.log(`[Version Check] Files tampered. Remote: ${remoteVersion} | Local: ${CURRENT_VERSION}`);
+                updateBanner.innerHTML = `
+                    <div style="font-size: 24px; font-weight: 800; font-family: 'Unbounded', sans-serif; margin-bottom: 5px;">Hey!</div>
+                    <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">Stop tampering with the files!</div>
+                    <div style="font-size: 14px; opacity: 0.9;">It really hurts :(</div>
+                `;
+            }
+
+            // Insert the banner at the very top of the website body
+            document.body.insertBefore(updateBanner, document.body.firstChild);
+        } else {
+            console.log(`[Version Check] Website is up to date. Version: ${CURRENT_VERSION}`);
+        }
+    } catch (error) {
+        console.warn('Unable to complete remote version validation check:', error);
+    }
+}
+
+// ==========================================
 // TAB CLOAK LOGIC
 // ==========================================
 
@@ -564,3 +635,4 @@ if (searchInput) {
 checkSavedCloak(); // Restores custom tab configuration from LocalStorage context natively
 loadSplashText();
 loadCategories();
+checkProjectVersion();
