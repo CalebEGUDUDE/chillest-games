@@ -29,7 +29,7 @@ const customIconInput = document.getElementById('custom-icon');
 // ==========================================
 // VERSION CHECKER
 // ==========================================
-const CURRENT_VERSION = "1.0.2"; // Increment this when you update your local site code
+const CURRENT_VERSION = "1.0.3"; // Increment this when you update your local site code
 
 async function checkProjectVersion() {
     try {
@@ -562,6 +562,7 @@ function loadGame(gameUrl, gameFile) {
     iframe.frameBorder = '0';
     iframe.style.width = '100%';
     iframe.style.height = 'calc(100% - 100px)'; // Adjusted to leave room for the bottom credits bar
+    iframe.sandbox = 'allow-scripts allow-same-origin';
     
     const gameView = document.getElementById('game-view');
     gameView.appendChild(iframe);
@@ -577,7 +578,7 @@ function loadGame(gameUrl, gameFile) {
         });
 
     // ==========================================
-    // DYNAMIC CREDITS FETCH LOGIC
+    // FIXED: ROOT CREDITS FETCH LOGIC
     // ==========================================
     const gameName = gameFile.slice(0, -5); // Extract clean game name without '.html'
     
@@ -585,14 +586,9 @@ function loadGame(gameUrl, gameFile) {
     document.getElementById('credit-value').textContent = 'Loading...';
     document.getElementById('idea-value').textContent = 'Loading...';
 
-    // We can derive the category by analyzing the full gameUrl path
-    // Format: .../games/CategoryName/GameName.html
-    const urlParts = gameUrl.split('/');
-    const categoryName = urlParts[urlParts.length - 2];
-
-    // Build paths pointing to where your data configuration JSONs live per game
-    const creditsUrl = `${baseRawUrl}games/${categoryName}/credits.json`;
-    const ideasUrl = `${baseRawUrl}games/${categoryName}/ideas.json`;
+    // Since files are in the root directory, we pull them directly from baseRawUrl
+    const creditsUrl = `${baseRawUrl}credits.json`;
+    const ideasUrl = `${baseRawUrl}ideas.json`;
 
     // Fetch Credits Data
     fetch(creditsUrl)
@@ -601,7 +597,6 @@ function loadGame(gameUrl, gameFile) {
             return res.json();
         })
         .then(data => {
-            // Looks for a key matching the game name inside credits.json
             document.getElementById('credit-value').textContent = data[gameName] || 'Unknown';
         })
         .catch(() => {
@@ -615,7 +610,6 @@ function loadGame(gameUrl, gameFile) {
             return res.json();
         })
         .then(data => {
-            // Looks for a key matching the game name inside ideas.json
             document.getElementById('idea-value').textContent = data[gameName] || 'Unknown';
         })
         .catch(() => {
