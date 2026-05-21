@@ -29,7 +29,7 @@ const customIconInput = document.getElementById('custom-icon');
 // ==========================================
 // VERSION CHECKER
 // ==========================================
-const CURRENT_VERSION = "1.0.5"; // Increment this when you update your local site code
+const CURRENT_VERSION = "1.0.6"; // Increment this when you update your local site code
 
 async function checkProjectVersion() {
     try {
@@ -650,7 +650,20 @@ document.getElementById('open-blank-btn').addEventListener('click', () => {
         });
 });
 
+// Locate this existing block near the bottom of load_games.js and replace it:
+
 document.getElementById('close-btn').addEventListener('click', () => {
+    // NEW: Automatically exit fullscreen if the user closes the game while in it
+    if (document.fullscreenElement) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+
     const iframe = document.getElementById('game-iframe');
     if (iframe) {
         iframe.remove();
@@ -671,6 +684,42 @@ if (searchInput) {
         filterGames(query);
     });
 }
+
+// Add this logic with your other action button listeners (near 'download-btn'/'close-btn')
+
+document.getElementById('fullscreen-btn').addEventListener('click', () => {
+    const gameView = document.getElementById('game-view');
+    
+    if (!document.fullscreenElement) {
+        // Enter fullscreen mode on the wrapper element
+        if (gameView.requestFullscreen) {
+            gameView.requestFullscreen();
+        } else if (gameView.webkitRequestFullscreen) { /* Safari */
+            gameView.webkitRequestFullscreen();
+        } else if (gameView.msRequestFullscreen) { /* IE11 */
+            gameView.msRequestFullscreen();
+        }
+    } else {
+        // Exit fullscreen mode
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+});
+
+// Sync UI text depending on the browser state changes
+document.addEventListener('fullscreenchange', () => {
+    const fsBtn = document.getElementById('fullscreen-btn');
+    if (document.fullscreenElement) {
+        fsBtn.textContent = 'Exit Fullscreen';
+    } else {
+        fsBtn.textContent = 'Fullscreen';
+    }
+});
 
 // Bottom execution runner inside load_games.js
 checkSavedCloak(); // Restores custom tab configuration from LocalStorage context natively

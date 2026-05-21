@@ -401,3 +401,84 @@ a {
 #game-credits-panel strong {
     color: #e69138; /* Accent pop orange */
 }
+
+/* ==========================================================================
+   FIXED FULLSCREEN AUTO-HIDE HOVER ELEMENTS
+   ========================================================================== */
+
+/* Maximize container view */
+#game-view:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    background-color: #182a69;
+    overflow: hidden;
+}
+
+/* Force iframe to occupy 100% of the viewport underneath menus */
+#game-view:fullscreen #game-iframe {
+    height: 100vh !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+/* Position control bars and hide them outside the viewport */
+#game-view:fullscreen #game-controls,
+#game-view:fullscreen #game-credits-panel {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    transition: transform 0.25s ease-in-out, opacity 0.2s ease;
+    box-sizing: border-box;
+    pointer-events: auto; /* Ensures you can click inside them */
+}
+
+#game-view:fullscreen #game-controls {
+    top: 0;
+    transform: translateY(-100%);
+    opacity: 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+#game-view:fullscreen #game-credits-panel {
+    bottom: 0;
+    transform: translateY(100%);
+    opacity: 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* Create hover zone areas directly using the native element wrappers */
+#game-view:fullscreen::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 25px; /* Invisible strip at the absolute top edge */
+    z-index: 9;
+}
+
+#game-view:fullscreen::after {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 25px; /* Invisible strip at the absolute bottom edge */
+    z-index: 9;
+}
+
+/* Smooth slide in rules when hovering near the top or bottom boundaries */
+#game-view:fullscreen:has(> ::before:hover) #game-controls,
+#game-view:fullscreen #game-controls:hover {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+#game-view:fullscreen:has(> ::after:hover) #game-credits-panel,
+#game-view:fullscreen #game-credits-panel:hover {
+    transform: translateY(0);
+    opacity: 1;
+}
