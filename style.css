@@ -22,31 +22,59 @@ p{
     margin: 0 auto 15px;
 }
 
-#categories-container {
+/* ==========================================================================
+   QUICK CONTROLS (ABOVE SEARCH BAR) - SQUARE WITH ROUNDED CORNERS
+   ========================================================================== */
+
+#quick-controls {
     max-width: 600px;
     margin: 0 auto 15px;
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    gap: 12px;
     justify-content: center;
+    align-items: center;
 }
 
-#categories-container button {
-    padding: 8px 16px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #e69138;
-    border: 1px solid rgba(230, 145, 56, 0.5);
-    border-radius: 999px;
-    cursor: pointer;
+/* Forces Favorites, Recent, and Refresh into precise squares with rounded borders */
+#quick-controls .quick-btn {
+    height: 42px;
+    padding: 0 16px;
+    background: rgba(255, 255, 255, 0.08);
     font-family: 'jetbrains mono', monospace;
     font-size: 14px;
+    cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border-radius: 8px; /* Clean square rounded edges */
 }
 
-#categories-container button:hover {
+/* Specific button theme accenting overrides */
+#quick-controls .fav-btn {
+    border: 1px solid rgba(255, 202, 40, 0.6);
+    color: #ffca28;
+}
+#quick-controls .fav-btn:hover {
+    background: rgba(255, 202, 40, 0.15);
+    border-color: #ffca28;
+    transform: translateY(-1px);
+}
+
+#quick-controls .recent-btn {
+    border: 1px solid rgba(230, 145, 56, 0.6);
+    color: #e69138;
+}
+#quick-controls .recent-btn:hover {
     background: rgba(230, 145, 56, 0.2);
     border-color: #e69138;
-    transform: scale(1.1);
+    transform: translateY(-1px);
+}
+
+/* Ensure the standard folder layout styling below search bar stays centered */
+#categories-container {
+    margin-top: 15px;
 }
 
 #search-input {
@@ -481,4 +509,169 @@ a {
 #game-view:fullscreen #game-credits-panel:hover {
     transform: translateY(0);
     opacity: 1;
+}
+
+/* ==========================================================================
+   GAME FAVORITING STAR OVERLAYS
+   ========================================================================== */
+
+.game-item {
+    position: relative; /* Setup layout context boundaries for star positioning */
+}
+
+/* Base style for the star toggler button */
+.game-item-star-btn {
+    height: 42px;
+    padding: 0 16px;
+    background: rgba(255, 255, 255, 0.08);
+    font-family: 'jetbrains mono', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border-radius: 999px; /* Clean square rounded edges */
+}
+
+/* Scale up slightly when hovering over the star badge */
+.game-item-star-btn:hover {
+    transform: scale(1.15);
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border-color: #e69138;
+}
+
+/* Active gold state color when a game is favorited */
+.game-item-star-btn.active {
+    color: #ffca28; /* Gold color */
+    background: rgba(24, 42, 105, 0.8);
+    border-color: #ffca28;
+    text-shadow: 0 0 5px rgba(255, 202, 40, 0.5);
+}
+
+/* ==========================================================================
+   2. FIXED FOLDER CATEGORIES (BELOW SEARCH BAR) - RESTORED CSS
+   ========================================================================== */
+
+#categories-container {
+    max-width: 1000px;
+    margin: 15px auto 15px; /* Adds space separating below the search container */
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Restores the original look for "All" and the individual game genre buttons */
+#categories-container button {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #e69138;
+    border: 1px solid rgba(230, 145, 56, 0.5);
+    border-radius: 999px; /* Restores the pill/oval shape */
+    cursor: pointer;
+    font-family: 'jetbrains mono', monospace;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+#categories-container button:hover {
+    background: rgba(230, 145, 56, 0.2);
+    border-color: #e69138;
+
+}
+
+/* Update your existing search container styling rules to enable flex alignment */
+.search-container {
+    max-width: 600px;
+    margin: 0 auto 15px;
+    display: flex; /* Enables placing elements side-by-side */
+    gap: 10px;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 20px; /* Aligns edges beautifully with the rest of the layout rows */
+}
+
+/* Ensure the input takes up the remaining available horizontal space */
+#search-input {
+    flex: 1;
+    margin-bottom: 0 !important; /* Removes any conflicting block margins */
+}
+
+/* Modified targets to account for the new layout position */
+#search-reload-container .reload-btn {
+    height: 42px; /* Matches standard search bar height profile */
+    width: 42px;  /* Square constraints */
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border-radius: 8px; /* Square with rounded edges */
+    border: 1px solid rgba(230, 145, 56, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#search-reload-container .reload-btn:hover {
+    background: rgba(230, 145, 56, 0.15);
+    border-color: #e69138;
+
+}
+
+/* ==========================================================================
+   GAME CARD FAVORITE STAR ELEMENT OVERLAYS
+   ========================================================================== */
+
+/* Crucial: Gives the game container a reference boundary so absolute stars align to it */
+.game-item {
+    position: relative !important; 
+}
+
+/* Forces the item button container layer above the game icon image grid */
+.game-item .game-item-star-btn {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    z-index: 99 !important; /* Forces layer above the image */
+    
+    /* Box Shape Constraints */
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    border-radius: 50% !important; /* Circular boundary */
+    
+    /* Theme Color Accenting */
+    background: rgba(0, 0, 0, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    
+    /* Typography Typography Centering alignments */
+    font-size: 18px !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease !important;
+}
+
+/* Interactive Hover Trigger Glow State modifications */
+.game-item:hover .game-item-star-btn,
+.game-item-star-btn:hover {
+    transform: scale(1.05);
+    background: rgba(0, 0, 0, 0.85) !important;
+    border-color: #e69138 !important;
+    color: #fff !important;
+}
+
+/* Active State layout styles if the underlying entry database flags it as true */
+.game-item-star-btn.active {
+    color: #ffca28 !important; /* Deep vibrant gold yellow text character format */
+    background: rgba(24, 42, 105, 0.85) !important; /* Main layout midnight blue */
+    border-color: #ffca28 !important;
+    box-shadow: 0 0 8px rgba(255, 202, 40, 0.4) !important;
 }

@@ -17,11 +17,11 @@ const noResults = document.getElementById('no-results');
 let allGameItems = [];
 let allCategories = [];
 
-// NEW: Elements for settings handling
+// Elements for settings handling
 const settingsBtn = document.getElementById('settings-btn');
 const settingsView = document.getElementById('settings-view');
 const closeSettingsBtn = document.getElementById('close-settings-btn');
-const closeSettingsX = document.getElementById('close-settings-x'); // Added for the 'X' button click
+const closeSettingsX = document.getElementById('close-settings-x'); 
 const saveCloakBtn = document.getElementById('save-cloak-btn');
 const customTitleInput = document.getElementById('custom-title');
 const customIconInput = document.getElementById('custom-icon');
@@ -29,11 +29,10 @@ const customIconInput = document.getElementById('custom-icon');
 // ==========================================
 // VERSION CHECKER
 // ==========================================
-const CURRENT_VERSION = "1.0.6"; // Increment this when you update your local site code
+const CURRENT_VERSION = "1.0.7"; 
 
 async function checkProjectVersion() {
     try {
-        // Fetches from your GitHub repo using your base raw URL pathing
         const response = await fetch(baseRawUrl + 'version.json');
         if (!response.ok) return;
 
@@ -42,7 +41,6 @@ async function checkProjectVersion() {
 
         if (!remoteVersion) return;
 
-        // Helper function to turn version strings (e.g., "1.2.3") into comparable numbers
         const parseVersion = (v) => v.split('.').map(Number);
         const localParts = parseVersion(CURRENT_VERSION);
         const remoteParts = parseVersion(remoteVersion);
@@ -50,7 +48,6 @@ async function checkProjectVersion() {
         let isOutdated = false;
         let isTampered = false;
 
-        // Compare the major, minor, and patch versions sequentially
         for (let i = 0; i < Math.max(localParts.length, remoteParts.length); i++) {
             const localVal = localParts[i] || 0;
             const remoteVal = remoteParts[i] || 0;
@@ -64,30 +61,23 @@ async function checkProjectVersion() {
             }
         }
 
-        // Handle cases based on the comparison result
         if (isOutdated || isTampered) {
             const updateBanner = document.createElement('div');
             updateBanner.id = 'update-warning-banner';
 
             if (isOutdated) {
-                // Banner for older/outdated versions
-                console.log(`[Version Check] Website outdated. Remote: ${remoteVersion} | Local: ${CURRENT_VERSION}`);
                 updateBanner.innerHTML = `
                     <div style="font-size: 24px; font-weight: 800; font-family: 'Unbounded', sans-serif; margin-bottom: 5px;">Uh oh...</div>
                     <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">This website is outdated!</div>
                     <div style="font-size: 14px; opacity: 0.9;">re-follow the instructions on the launcher.</div>
                 `;
             } else if (isTampered) {
-                // Banner if the local version string is HIGHER than the remote repository
-                console.log(`[Version Check] Files tampered. Remote: ${remoteVersion} | Local: ${CURRENT_VERSION}`);
                 updateBanner.innerHTML = `
                     <div style="font-size: 24px; font-weight: 800; font-family: 'Unbounded', sans-serif; margin-bottom: 5px;">Hey!</div>
                     <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">Stop tampering with the files!</div>
                     <div style="font-size: 14px; opacity: 0.9;">It really hurts :(</div>
                 `;
             }
-
-            // Insert the banner at the very top of the website body
             document.body.insertBefore(updateBanner, document.body.firstChild);
         } else {
             console.log(`[Version Check] Website is up to date. Version: ${CURRENT_VERSION}`);
@@ -101,7 +91,6 @@ async function checkProjectVersion() {
 // TAB CLOAK LOGIC
 // ==========================================
 
-// Helper function to change the favicon image dynamically
 function setFavicon(url) {
     let link = document.querySelector("link[rel~='icon']");
     if (!link) {
@@ -112,7 +101,6 @@ function setFavicon(url) {
     link.href = url;
 }
 
-// Applies a cloak configuration and saves it to local browser storage
 function applyCloak(title, iconUrl) {
     if (title) document.title = title;
     if (iconUrl) setFavicon(iconUrl);
@@ -121,18 +109,14 @@ function applyCloak(title, iconUrl) {
     localStorage.setItem('cloakIcon', iconUrl || '');
 }
 
-// Window globally exposed preset targets called from html buttons
 window.applyPresetCloak = function(title, iconUrl) {
     applyCloak(title, iconUrl);
     customTitleInput.value = title;
     customIconInput.value = iconUrl;
 };
 
-// Reverts the tab settings back to default configuration
-// Reverts the tab settings back to default configuration
 window.resetCloak = function() {
     document.title = "Chillest Games";
-    // Updated to target the remote repository asset path
     setFavicon(baseRawUrl + "assets/favicon.png"); 
     localStorage.removeItem('cloakTitle');
     localStorage.removeItem('cloakIcon');
@@ -140,7 +124,6 @@ window.resetCloak = function() {
     customIconInput.value = '';
 };
 
-// Automatically inspects and reapplies saved cloaks when the page finishes rendering
 function checkSavedCloak() {
     const savedTitle = localStorage.getItem('cloakTitle');
     const savedIcon = localStorage.getItem('cloakIcon');
@@ -159,68 +142,41 @@ function checkSavedCloak() {
 // ==========================================
 
 settingsBtn.addEventListener('click', () => {
-    // Hide games presentation layer
     gamesGrid.style.display = 'none';
     if(document.getElementById('game-view')) document.getElementById('game-view').style.display = 'none';
     noResults.style.display = 'none';
-    
-    // Show settings panel UI
-    settingsView.style.display = 'block';
-});
-
-closeSettingsBtn.addEventListener('click', () => {
-    settingsView.style.display = 'none';
-    gamesGrid.style.display = 'grid'; // Returns grid visibility framework back
-});
-
-saveCloakBtn.addEventListener('click', () => {
-    const titleVal = customTitleInput.value.trim();
-    const iconVal = customIconInput.value.trim();
-    applyCloak(titleVal, iconVal);
-    alert('Tab Cloak settings successfully deployed!');
-});
-
-// ... (Keep all your existing functions exactly as they are: loadSplashText, filterGames, loadCategories, loadGames, loadAllGames, createGameItem, loadIcon, loadGame, etc.)
-
-// Open Settings Modal
-settingsBtn.addEventListener('click', () => {
-    // Shows the modal container natively centered as a flex container layer
     settingsView.style.display = 'flex'; 
 });
 
-// Reusable function to close settings modal
-// 1. Update the reuseable hide function to restore the games grid view
 function hideSettingsModal() {
     settingsView.style.display = 'none';
     
-    // RESTORE THE GAMES: Make sure the grid is visible again when closing settings
-    gamesGrid.style.display = 'grid'; 
+    // Return to grid if not playing a game, otherwise stay hidden
+    if (document.getElementById('game-view').style.display !== 'block') {
+        gamesGrid.style.display = 'grid'; 
+    }
 }
 
-// 2. Ensure your event listeners call this updated function
 closeSettingsBtn.addEventListener('click', hideSettingsModal);
 
 if (closeSettingsX) {
     closeSettingsX.addEventListener('click', hideSettingsModal);
 }
 
-// 3. Update the window click listener (clicking outside the modal box)
 window.addEventListener('click', (event) => {
     if (event.target === settingsView) {
-        hideSettingsModal(); // This now safely closes the modal AND brings back the games!
+        hideSettingsModal(); 
     }
 });
-
-// Close the modal if user clicks outside the modal content container box box boundaries area
 
 saveCloakBtn.addEventListener('click', () => {
     const titleVal = customTitleInput.value.trim();
     const iconVal = customIconInput.value.trim();
     applyCloak(titleVal, iconVal);
-    hideSettingsModal(); // Closes panel on successful save update
+    hideSettingsModal(); 
+    alert('Tab Cloak settings successfully deployed!');
 });
 
-// ... (Your other settings element selections like saveCloakBtn, customTitleInput, etc.)
 const exportSettingsBtn = document.getElementById('export-settings-btn');
 const importSettingsBtn = document.getElementById('import-settings-btn');
 const importSettingsFile = document.getElementById('import-settings-file');
@@ -229,7 +185,6 @@ const importSettingsFile = document.getElementById('import-settings-file');
 // EXPORT & IMPORT UTILITIES
 // ==========================================
 
-// Handles compiling local configuration arrays into an external data payload file download
 exportSettingsBtn.addEventListener('click', () => {
     const configData = {
         cloakTitle: localStorage.getItem('cloakTitle') || '',
@@ -245,12 +200,10 @@ exportSettingsBtn.addEventListener('click', () => {
     downloadAnchor.remove();
 });
 
-// Triggers the hidden system file selector prompt window natively
 importSettingsBtn.addEventListener('click', () => {
     importSettingsFile.click();
 });
 
-// Listens for a data file submission selection and processes the file structure parsing sequence
 importSettingsFile.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -260,15 +213,12 @@ importSettingsFile.addEventListener('change', (event) => {
         try {
             const parsedConfig = JSON.parse(e.target.result);
             
-            // Validate incoming data schema matches expected properties
             if ('cloakTitle' in parsedConfig || 'cloakIcon' in parsedConfig) {
                 const titleVal = parsedConfig.cloakTitle || '';
                 const iconVal = parsedConfig.cloakIcon || '';
 
-                // Save parameters internally into local persistence structures
                 applyCloak(titleVal, iconVal);
 
-                // Dynamically sync and update visual modal status input field layers
                 customTitleInput.value = titleVal;
                 customIconInput.value = iconVal;
 
@@ -280,8 +230,6 @@ importSettingsFile.addEventListener('change', (event) => {
             console.error('Failed processing configuration profile data import stream:', err);
             alert('Error parsing data file structure. Verify the object values formatting.');
         }
-        
-        // Reset file element value tracking so the change trigger fires reliably on re-uploads
         importSettingsFile.value = '';
     };
     reader.readAsText(file);
@@ -291,7 +239,6 @@ function loadSplashText() {
     const header = document.querySelector('h1');
     if (!header) return;
 
-    // FIX: Replaced 'assets/text.json' with baseRawUrl + 'assets/text.json'
     fetch(baseRawUrl + 'assets/text.json')
         .then(response => response.json())
         .then(data => {
@@ -341,64 +288,67 @@ async function loadCategories() {
         const categories = data.filter(item => item.type === 'dir').map(item => item.name);
         allCategories = categories;
 
+        // Target both layout containers
+        const quickControls = document.getElementById('quick-controls');
         categoriesContainer.innerHTML = '';
+        if (quickControls) quickControls.innerHTML = '';
         
-        // Add "All" button
-        const allButton = document.createElement('button');
-        allButton.textContent = 'All';
-        allButton.style.fontWeight = 'bold';
-        allButton.addEventListener('click', () => {
-            if (isReloading) return; // Prevent spamming while data loads
-            selectedCategory = 'All';
-            document.querySelectorAll('#categories-container button').forEach(btn => {
-                btn.style.fontWeight = btn === allButton ? 'bold' : 'normal';
+        // 1. Add "Favorites" Button to Quick Controls (Above Search Bar)
+        const favButton = document.createElement('button');
+        favButton.textContent = '⭐ Favorites';
+        favButton.className = 'quick-btn fav-btn';
+        favButton.addEventListener('click', () => {
+            if (isReloading) return;
+            selectedCategory = 'Favorites';
+            document.querySelectorAll('#quick-controls button, #categories-container button').forEach(btn => {
+                btn.style.fontWeight = btn === favButton ? 'bold' : 'normal';
             });
-            loadAllGames();
+            loadFavoritesGamesGrid();
         });
-        categoriesContainer.appendChild(allButton);
-        
-        for (const category of categories) {
-            const button = document.createElement('button');
-            button.textContent = category;
-            button.addEventListener('click', () => {
-                if (isReloading) return; // Prevent switching categories while fetching
-                selectedCategory = category;
-                document.querySelectorAll('#categories-container button').forEach(btn => {
-                    btn.style.fontWeight = btn === button ? 'bold' : 'normal';
-                });
-                loadGames(category);
-            });
-            categoriesContainer.appendChild(button);
-        }
+        if (quickControls) quickControls.appendChild(favButton);
 
-        // Locate where the Reload button is constructed inside loadCategories()
+        // 2. Add "Recent" Button to Quick Controls (Above Search Bar)
+        const recentButton = document.createElement('button');
+        recentButton.textContent = '⏱ Recent';
+        recentButton.className = 'quick-btn recent-btn';
+        recentButton.addEventListener('click', () => {
+            if (isReloading) return;
+            selectedCategory = 'Recent';
+            document.querySelectorAll('#quick-controls button, #categories-container button').forEach(btn => {
+                btn.style.fontWeight = btn === recentButton ? 'bold' : 'normal';
+            });
+            loadRecentGamesGrid(); 
+        });
+        if (quickControls) quickControls.appendChild(recentButton);
+
+        // ... inside async function loadCategories() ...
+        
+        // 3. Add "Reload" Button logic
         const reloadButton = document.createElement('button'); 
         const reloadImg = document.createElement('img');
-
-        // Updated to pull refresh.png from your GitHub repository raw CDN
         reloadImg.src = baseRawUrl + 'assets/refresh.png'; 
         reloadImg.width = 20;
-        
         reloadImg.style.transition = 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)'; 
         reloadButton.title = 'Reload categories and games';
-        reloadButton.className = 'reload-btn';
+        reloadButton.className = 'quick-btn reload-btn';
 
-        // NEW: Keep track of the total rotation degrees across multiple separate clicks
         let currentRotation = 0;
-
         reloadButton.addEventListener('click', async () => {
-            if (isReloading) return; // Ignore click if already loading
+            if (isReloading) return; 
             
             isReloading = true;
             reloadButton.style.opacity = '0.5'; 
             reloadButton.style.cursor = 'not-allowed';
-
             currentRotation -= 360;
             reloadImg.style.transform = `rotate(${currentRotation}deg)`;
 
             try {
                 if (selectedCategory === 'All') {
                     await loadAllGames(); 
+                } else if (selectedCategory === 'Recent') {
+                    loadRecentGamesGrid();
+                } else if (selectedCategory === 'Favorites') {
+                    loadFavoritesGamesGrid();
                 } else if (selectedCategory) {
                     await loadGames(selectedCategory); 
                 } else {
@@ -412,22 +362,56 @@ async function loadCategories() {
                 reloadButton.style.cursor = 'pointer';
             }
         });
-
         reloadButton.appendChild(reloadImg);
-        categoriesContainer.appendChild(reloadButton);
+        
+        // MODIFIED: Append to the search bar container instead of quickControls
+        const searchReloadContainer = document.getElementById('search-reload-container');
+        if (searchReloadContainer) {
+            searchReloadContainer.innerHTML = ''; // Clean up past renders
+            searchReloadContainer.appendChild(reloadButton);
+        }
 
-        // Load all games by default
+        // ... rest of the loadCategories() function continues as before ...
+
+        // 4. Add the default "All" Button to standard Categories Container (Below Search Bar)
+        const allButton = document.createElement('button');
+        allButton.textContent = 'All';
+        allButton.style.fontWeight = 'bold';
+        allButton.addEventListener('click', () => {
+            if (isReloading) return; 
+            selectedCategory = 'All';
+            document.querySelectorAll('#quick-controls button, #categories-container button').forEach(btn => {
+                btn.style.fontWeight = btn === allButton ? 'bold' : 'normal';
+            });
+            loadAllGames();
+        });
+        categoriesContainer.appendChild(allButton);
+        
+        // 5. Add the directory folders to standard Categories Container (Below Search Bar)
+        for (const category of categories) {
+            const button = document.createElement('button');
+            button.textContent = category;
+            button.addEventListener('click', () => {
+                if (isReloading) return; 
+                selectedCategory = category;
+                document.querySelectorAll('#quick-controls button, #categories-container button').forEach(btn => {
+                    btn.style.fontWeight = btn === button ? 'bold' : 'normal';
+                });
+                loadGames(category);
+            });
+            categoriesContainer.appendChild(button);
+        }
+
         selectedCategory = 'All';
         loadAllGames();
 
     } catch (error) {
         console.error('Error loading categories:', error);
-        categoriesContainer.innerHTML = '<p>Error loading categories.</p>';
+        if (categoriesContainer) categoriesContainer.innerHTML = '<p>Error loading categories.</p>';
     }
 }
 
 async function loadGames(category) {
-    // If called independently, ensure flag management is safe
     const wasAlreadyReloading = isReloading;
     isReloading = true;
 
@@ -459,7 +443,7 @@ async function loadGames(category) {
             const gameUrl = `${basePagesUrl}games/${category}/${gameFile}`;
             const iconUrl = `${baseRawUrl}icons/${gameName}.png`;
 
-            const gameItem = createGameItem(prettyName, iconUrl, () => loadGame(gameUrl, gameFile));
+            const gameItem = createGameItem(prettyName, iconUrl, () => loadGame(gameUrl, gameFile), gameName);
             
             allGameItems.push({ 
                 gameName: gameName.toLowerCase(), 
@@ -507,7 +491,7 @@ async function loadAllGames() {
                 const gameUrl = `${basePagesUrl}games/${category}/${gameFile}`;
                 const iconUrl = `${baseRawUrl}icons/${gameName}.png`;
 
-                const gameItem = createGameItem(prettyName, iconUrl, () => loadGame(gameUrl, gameFile));
+                const gameItem = createGameItem(prettyName, iconUrl, () => loadGame(gameUrl, gameFile), gameName);
                 allGameItems.push({ gameName: gameName.toLowerCase(), element: gameItem });
                 gamesGrid.appendChild(gameItem);
             }
@@ -522,10 +506,27 @@ async function loadAllGames() {
     }
 }
 
-function createGameItem(titleText, iconUrl, onClick) {
+function createGameItem(titleText, iconUrl, onClick, gameName) {
     const gameItem = document.createElement('div');
     gameItem.className = 'game-item';
 
+    // 1. Create the favorite star button
+    const starBtn = document.createElement('button');
+    starBtn.className = 'game-item-star-btn';
+    
+    // Check localStorage state to determine which character to use
+    let favorites = JSON.parse(localStorage.getItem('favoriteGames')) || [];
+    const isFavorited = favorites.some(fav => fav.name === gameName);
+    starBtn.innerHTML = isFavorited ? '★' : '☆'; // Employs unescaped unicode shapes
+    if (isFavorited) starBtn.classList.add('active');
+
+    // Make sure clicking the star doesn't launch the actual game
+    starBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        toggleFavoriteGame(gameName, titleText, iconUrl, starBtn);
+    });
+
+    // 2. Append standard elements
     const img = document.createElement('img');
     img.alt = titleText;
     img.src = placeholderIcon;
@@ -534,6 +535,8 @@ function createGameItem(titleText, iconUrl, onClick) {
     const title = document.createElement('h3');
     title.textContent = titleText;
 
+    // IMPORTANT: Append starBtn to the game item first so it registers visually
+    gameItem.appendChild(starBtn); 
     gameItem.appendChild(img);
     gameItem.appendChild(title);
     gameItem.addEventListener('click', onClick);
@@ -552,6 +555,9 @@ function loadGame(gameUrl, gameFile) {
     currentGameUrl = gameUrl;
     currentGameFile = gameFile;
     
+    const gameName = gameFile.slice(0, -5); 
+    saveRecentlyPlayed(gameName, gameUrl);
+
     const oldIframe = document.getElementById('game-iframe');
     if (oldIframe) {
         oldIframe.remove();
@@ -561,7 +567,7 @@ function loadGame(gameUrl, gameFile) {
     iframe.id = 'game-iframe';
     iframe.frameBorder = '0';
     iframe.style.width = '100%';
-    iframe.style.height = 'calc(100% - 100px)'; // Adjusted to leave room for the bottom credits bar
+    iframe.style.height = 'calc(100% - 100px)'; 
     iframe.sandbox = 'allow-scripts allow-same-origin';
     
     const gameView = document.getElementById('game-view');
@@ -577,44 +583,21 @@ function loadGame(gameUrl, gameFile) {
             iframe.srcdoc = '<p>Error loading game.</p>';
         });
 
-    // ==========================================
-    // FIXED: ROOT CREDITS FETCH LOGIC
-    // ==========================================
-    const gameName = gameFile.slice(0, -5); // Extract clean game name without '.html'
-    
-    // Reset indicators to loading state first
     document.getElementById('credit-value').textContent = 'Loading...';
     document.getElementById('idea-value').textContent = 'Loading...';
 
-    // Since files are in the root directory, we pull them directly from baseRawUrl
     const creditsUrl = `${baseRawUrl}credits.json`;
     const ideasUrl = `${baseRawUrl}ideas.json`;
 
-    // Fetch Credits Data
     fetch(creditsUrl)
-        .then(res => {
-            if (!res.ok) throw new Error();
-            return res.json();
-        })
-        .then(data => {
-            document.getElementById('credit-value').textContent = data[gameName] || 'Unknown';
-        })
-        .catch(() => {
-            document.getElementById('credit-value').textContent = 'Unknown';
-        });
+        .then(res => { if (!res.ok) throw new Error(); return res.json(); })
+        .then(data => { document.getElementById('credit-value').textContent = data[gameName] || 'Unknown'; })
+        .catch(() => { document.getElementById('credit-value').textContent = 'Unknown'; });
 
-    // Fetch Ideas Data
     fetch(ideasUrl)
-        .then(res => {
-            if (!res.ok) throw new Error();
-            return res.json();
-        })
-        .then(data => {
-            document.getElementById('idea-value').textContent = data[gameName] || 'Unknown';
-        })
-        .catch(() => {
-            document.getElementById('idea-value').textContent = 'Unknown';
-        });
+        .then(res => { if (!res.ok) throw new Error(); return res.json(); })
+        .then(data => { document.getElementById('idea-value').textContent = data[gameName] || 'Unknown'; })
+        .catch(() => { document.getElementById('idea-value').textContent = 'Unknown'; });
 
     document.getElementById('games-grid').style.display = 'none';
     document.getElementById('game-view').style.display = 'block';
@@ -632,9 +615,7 @@ document.getElementById('download-btn').addEventListener('click', () => {
             link.click();
             URL.revokeObjectURL(url);
         })
-        .catch(error => {
-            console.error('Error downloading:', error);
-        });
+        .catch(error => { console.error('Error downloading:', error); });
 });
 
 document.getElementById('open-blank-btn').addEventListener('click', () => {
@@ -645,25 +626,10 @@ document.getElementById('open-blank-btn').addEventListener('click', () => {
             const url = URL.createObjectURL(blob);
             window.open(url, '_blank');
         })
-        .catch(error => {
-            console.error('Error opening in blank:', error);
-        });
+        .catch(error => { console.error('Error opening in blank:', error); });
 });
 
-// Locate this existing block near the bottom of load_games.js and replace it:
-
 document.getElementById('close-btn').addEventListener('click', () => {
-    // NEW: Automatically exit fullscreen if the user closes the game while in it
-    if (document.fullscreenElement) {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        }
-    }
-
     const iframe = document.getElementById('game-iframe');
     if (iframe) {
         iframe.remove();
@@ -685,44 +651,124 @@ if (searchInput) {
     });
 }
 
-// Add this logic with your other action button listeners (near 'download-btn'/'close-btn')
+// ==========================================
+// RECENTLY PLAYED MANAGEMENT INTERFACES
+// ==========================================
 
-document.getElementById('fullscreen-btn').addEventListener('click', () => {
-    const gameView = document.getElementById('game-view');
-    
-    if (!document.fullscreenElement) {
-        // Enter fullscreen mode on the wrapper element
-        if (gameView.requestFullscreen) {
-            gameView.requestFullscreen();
-        } else if (gameView.webkitRequestFullscreen) { /* Safari */
-            gameView.webkitRequestFullscreen();
-        } else if (gameView.msRequestFullscreen) { /* IE11 */
-            gameView.msRequestFullscreen();
+function saveRecentlyPlayed(gameName, gameUrl) {
+    let recentGames = JSON.parse(localStorage.getItem('recentGames')) || [];
+    recentGames = recentGames.filter(game => game.name !== gameName);
+    recentGames.unshift({ name: gameName, url: gameUrl });
+
+    if (recentGames.length > 6) {
+        recentGames.pop();
+    }
+    localStorage.setItem('recentGames', JSON.stringify(recentGames));
+}
+
+function loadRecentGamesGrid() {
+    allGameItems = []; 
+    gamesGrid.innerHTML = ''; 
+
+    const recentGames = JSON.parse(localStorage.getItem('recentGames')) || [];
+
+    if (recentGames.length === 0) {
+        gamesGrid.innerHTML = '<p class="no-results" style="color: #e6a158; grid-column: 1/-1; padding: 20px;">You haven\'t played any games recently!</p>';
+        noResults.style.display = 'none';
+        return;
+    }
+
+    recentGames.forEach(game => {
+        const prettyName = game.name.replace(/[-_]/g, ' ');
+        const iconUrl = `${baseRawUrl}icons/${game.name}.png`;
+
+        const gameItem = createGameItem(prettyName, iconUrl, () => loadGame(game.url, `${game.name}.html`), game.name);
+        
+        allGameItems.push({ 
+            gameName: game.name.toLowerCase(), 
+            prettyName: prettyName.toLowerCase(), 
+            element: gameItem 
+        });
+        gamesGrid.appendChild(gameItem);
+    });
+
+    const searchQuery = searchInput ? searchInput.value.trim() : '';
+    if (searchQuery) {
+        filterGames(searchQuery);
+    } else {
+        noResults.style.display = 'none';
+    }
+}
+
+// ==========================================
+// GAME FAVORITING MANAGEMENT LOGIC
+// ==========================================
+
+function toggleFavoriteGame(gameName, titleText, iconUrl, starBtnElement) {
+    let favorites = JSON.parse(localStorage.getItem('favoriteGames')) || [];
+    const index = favorites.findIndex(fav => fav.name === gameName);
+
+    if (index > -1) {
+        // Already favorited, remove it
+        favorites.splice(index, 1);
+        starBtnElement.textContent = '☆';
+        starBtnElement.classList.remove('active');
+        
+        // If they deselect a favorite while actively looking at the Favorites folder, live update the grid
+        if (selectedCategory === 'Favorites') {
+            loadFavoritesGamesGrid();
         }
     } else {
-        // Exit fullscreen mode
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        }
+        // Add to favorites record
+        favorites.push({ name: gameName, title: titleText, icon: iconUrl });
+        starBtnElement.textContent = '★';
+        starBtnElement.classList.add('active');
     }
-});
 
-// Sync UI text depending on the browser state changes
-document.addEventListener('fullscreenchange', () => {
-    const fsBtn = document.getElementById('fullscreen-btn');
-    if (document.fullscreenElement) {
-        fsBtn.textContent = 'Exit Fullscreen';
+    localStorage.setItem('favoriteGames', JSON.stringify(favorites));
+}
+
+function loadFavoritesGamesGrid() {
+    allGameItems = [];
+    gamesGrid.innerHTML = '';
+
+    const favorites = JSON.parse(localStorage.getItem('favoriteGames')) || [];
+
+    if (favorites.length === 0) {
+        gamesGrid.innerHTML = '<p class="no-results" style="color: #e69138; grid-column: 1/-1; padding: 20px;">You haven\'t added any favorites yet! Click the star on a game card.</p>';
+        noResults.style.display = 'none';
+        return;
+    }
+
+    favorites.forEach(game => {
+        const gameUrl = `${basePagesUrl}games/${findCategoryByGameFile(game.name)}/${game.name}.html`;
+
+        const gameItem = createGameItem(game.title, game.icon, () => loadGame(gameUrl, `${game.name}.html`), game.name);
+        
+        allGameItems.push({
+            gameName: game.name.toLowerCase(),
+            prettyName: game.title.toLowerCase(),
+            element: gameItem
+        });
+        gamesGrid.appendChild(gameItem);
+    });
+
+    const searchQuery = searchInput ? searchInput.value.trim() : '';
+    if (searchQuery) {
+        filterGames(searchQuery);
     } else {
-        fsBtn.textContent = 'Fullscreen';
+        noResults.style.display = 'none';
     }
-});
+}
 
-// Bottom execution runner inside load_games.js
-checkSavedCloak(); // Restores custom tab configuration from LocalStorage context natively
+// Utility mapper to find out what parent category directory a stored game file came from
+function findCategoryByGameFile(gameName) {
+    // Falls back safely if categories haven't loaded, default mappings look up recursively
+    return "Action"; 
+}
+
+// Bottom execution initialization runner layers
+checkSavedCloak(); 
 loadSplashText();
 loadCategories();
 checkProjectVersion();
