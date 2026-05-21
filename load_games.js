@@ -772,5 +772,3 @@ checkSavedCloak();
 loadSplashText();
 loadCategories();
 checkProjectVersion();
-
-/* fucking work */
