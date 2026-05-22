@@ -87,149 +87,6 @@ async function checkProjectVersion() {
 }*/
 
 // ==========================================
-// THEME LOGIC
-// ==========================================
-
-const THEMES = ['classic', 'dark', 'ocean', 'forest', 'crimson', 'sunset'];
-
-function hexToRgb(hex) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `${r}, ${g}, ${b}`;
-}
-
-function hexToHue(hex) {
-    let r = parseInt(hex.slice(1, 3), 16) / 255;
-    let g = parseInt(hex.slice(3, 5), 16) / 255;
-    let b = parseInt(hex.slice(5, 7), 16) / 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b), delta = max - min;
-    if (delta === 0) return 0;
-    let h;
-    if (max === r) h = ((g - b) / delta) % 6;
-    else if (max === g) h = (b - r) / delta + 2;
-    else h = (r - g) / delta + 4;
-    h = h * 60;
-    if (h < 0) h += 360;
-    return h;
-}
-
-function darkenHex(hex, factor = 0.75) {
-    const r = Math.round(parseInt(hex.slice(1, 3), 16) * factor);
-    const g = Math.round(parseInt(hex.slice(3, 5), 16) * factor);
-    const b = Math.round(parseInt(hex.slice(5, 7), 16) * factor);
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-}
-
-function updateSwatchActive(theme) {
-    document.querySelectorAll('.theme-swatch').forEach(swatch => {
-        swatch.classList.toggle('active', swatch.dataset.theme === theme);
-    });
-}
-
-function clearCustomVars() {
-    const root = document.documentElement;
-    ['--bg-primary-rgb', '--bg-secondary-rgb', '--accent-rgb', '--accent-hover', '--fav-rgb', '--bg-primary', '--bg-secondary', '--accent', '--fav', '--icon-hue-rotate'].forEach(v => {
-        root.style.removeProperty(v);
-    });
-}
-
-function applyTheme(theme) {
-    if (!THEMES.includes(theme)) theme = 'classic';
-    clearCustomVars();
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('selectedTheme', theme);
-    localStorage.removeItem('customBg');
-    localStorage.removeItem('customAccent');
-    updateSwatchActive(theme);
-}
-
-function applyCustomTheme(bgHex, accentHex) {
-    const root = document.documentElement;
-    const bgRgb = hexToRgb(bgHex);
-    const accentRgb = hexToRgb(accentHex);
-
-    const bgParts = bgRgb.split(', ').map(Number);
-    const bgSecRgb = bgParts.map(c => Math.max(0, Math.round(c * 0.82))).join(', ');
-
-    root.setAttribute('data-theme', 'custom');
-    root.style.setProperty('--bg-primary-rgb', bgRgb);
-    root.style.setProperty('--bg-secondary-rgb', bgSecRgb);
-    root.style.setProperty('--accent-rgb', accentRgb);
-    root.style.setProperty('--accent-hover', darkenHex(accentHex));
-    root.style.setProperty('--fav-rgb', '255, 202, 40');
-    root.style.setProperty('--bg-primary', `rgb(${bgRgb})`);
-    root.style.setProperty('--bg-secondary', `rgb(${bgSecRgb})`);
-    root.style.setProperty('--accent', `rgb(${accentRgb})`);
-    root.style.setProperty('--fav', 'rgb(255, 202, 40)');
-
-    const BASE_HUE = 31;
-    const accentHue = hexToHue(accentHex);
-    const hueRotation = Math.round(accentHue - BASE_HUE);
-    root.style.setProperty('--icon-hue-rotate', `${hueRotation}deg`);
-
-    localStorage.setItem('selectedTheme', 'custom');
-    localStorage.setItem('customBg', bgHex);
-    localStorage.setItem('customAccent', accentHex);
-
-    const swatch = document.getElementById('custom-swatch');
-    if (swatch) {
-        swatch.style.background = `linear-gradient(135deg, ${bgHex} 50%, ${accentHex} 50%)`;
-    }
-
-    updateSwatchActive('custom');
-}
-
-function loadSavedTheme() {
-    const saved = localStorage.getItem('selectedTheme') || 'classic';
-    if (saved === 'custom') {
-        const bg = localStorage.getItem('customBg') || '#182a69';
-        const accent = localStorage.getItem('customAccent') || '#e69138';
-        document.getElementById('custom-bg-color').value = bg;
-        document.getElementById('custom-accent-color').value = accent;
-        applyCustomTheme(bg, accent);
-    } else {
-        applyTheme(saved);
-    }
-}
-
-document.querySelectorAll('.theme-swatch').forEach(swatch => {
-    swatch.addEventListener('click', () => {
-        if (swatch.dataset.theme === 'custom') {
-            const bg = document.getElementById('custom-bg-color').value;
-            const accent = document.getElementById('custom-accent-color').value;
-            applyCustomTheme(bg, accent);
-        } else {
-            applyTheme(swatch.dataset.theme);
-        }
-    });
-});
-
-document.getElementById('apply-custom-theme-btn').addEventListener('click', () => {
-    const bg = document.getElementById('custom-bg-color').value;
-    const accent = document.getElementById('custom-accent-color').value;
-    applyCustomTheme(bg, accent);
-});
-
-document.getElementById('custom-bg-color').addEventListener('input', () => {
-    if (localStorage.getItem('selectedTheme') === 'custom') {
-        const bg = document.getElementById('custom-bg-color').value;
-        const accent = document.getElementById('custom-accent-color').value;
-        applyCustomTheme(bg, accent);
-    }
-});
-
-document.getElementById('custom-accent-color').addEventListener('input', () => {
-    if (localStorage.getItem('selectedTheme') === 'custom') {
-        const bg = document.getElementById('custom-bg-color').value;
-        const accent = document.getElementById('custom-accent-color').value;
-        applyCustomTheme(bg, accent);
-    }
-});
-
-loadSavedTheme();
-
-// ==========================================
 // TAB CLOAK LOGIC
 // ==========================================
 
@@ -330,8 +187,7 @@ const importSettingsFile = document.getElementById('import-settings-file');
 exportSettingsBtn.addEventListener('click', () => {
     const configData = {
         cloakTitle: localStorage.getItem('cloakTitle') || '',
-        cloakIcon: localStorage.getItem('cloakIcon') || '',
-        selectedTheme: localStorage.getItem('selectedTheme') || 'classic'
+        cloakIcon: localStorage.getItem('cloakIcon') || ''
     };
 
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configData, null, 2));
@@ -356,7 +212,7 @@ importSettingsFile.addEventListener('change', (event) => {
         try {
             const parsedConfig = JSON.parse(e.target.result);
             
-            if ('cloakTitle' in parsedConfig || 'cloakIcon' in parsedConfig || 'selectedTheme' in parsedConfig) {
+            if ('cloakTitle' in parsedConfig || 'cloakIcon' in parsedConfig) {
                 const titleVal = parsedConfig.cloakTitle || '';
                 const iconVal = parsedConfig.cloakIcon || '';
 
@@ -364,10 +220,6 @@ importSettingsFile.addEventListener('change', (event) => {
 
                 customTitleInput.value = titleVal;
                 customIconInput.value = iconVal;
-
-                if (parsedConfig.selectedTheme) {
-                    applyTheme(parsedConfig.selectedTheme);
-                }
 
                 alert('Configuration profile imported successfully!');
             } else {
@@ -787,37 +639,14 @@ document.getElementById('close-btn').addEventListener('click', () => {
     document.getElementById('games-grid').style.display = 'grid';
 });
 
-// Target the new clear button DOM element
-const clearSearchBtn = document.getElementById('clear-search-btn');
-
 if (searchInput) {
     searchInput.addEventListener('input', event => {
         const query = event.target.value;
-        
-        // Easter egg route handler shortcut triggers
         if (query.toLowerCase().trim() === 'never gonna give you up') {
             window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
             return;
         }
-        
-        // DYNAMIC TOGGLE: Show custom X clear button only if there is text present
-        if (clearSearchBtn) {
-            clearSearchBtn.style.display = query.trim().length > 0 ? 'flex' : 'none';
-        }
-        
         filterGames(query);
-    });
-}
-
-// CLICK INTERACTION: Clicking X clears everything out and updates the active layout folder filter
-if (clearSearchBtn) {
-    clearSearchBtn.addEventListener('click', () => {
-        if (searchInput) {
-            searchInput.value = ''; // Wipe search box text input field values
-            searchInput.focus();    // Keeps cursor active inside field seamlessly
-            filterGames('');        // Refreshes view back to raw active grid elements
-        }
-        clearSearchBtn.style.display = 'none'; // Re-hide itself until user types again
     });
 }
 

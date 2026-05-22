@@ -1,102 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;800&display=swap');
 
-/* ==========================================================================
-   THEME VARIABLES
-   ========================================================================== */
-
-:root {
-    --bg-primary-rgb: 24, 42, 105;
-    --bg-secondary-rgb: 20, 34, 84;
-    --accent-rgb: 230, 145, 56;
-    --accent-hover: #c37b2f;
-    --fav-rgb: 255, 202, 40;
-    --icon-hue-rotate: 0deg;
-
-    --bg-primary: rgb(var(--bg-primary-rgb));
-    --bg-secondary: rgb(var(--bg-secondary-rgb));
-    --accent: rgb(var(--accent-rgb));
-    --fav: rgb(var(--fav-rgb));
-}
-
-/* Classic (default) — dark blue + orange */
-[data-theme="classic"] {
-    --bg-primary-rgb: 24, 42, 105;
-    --bg-secondary-rgb: 20, 34, 84;
-    --accent-rgb: 230, 145, 56;
-    --accent-hover: #c37b2f;
-    --fav-rgb: 255, 202, 40;
-    --icon-hue-rotate: 0deg;
-}
-
-/* Dark — near-black + purple */
-[data-theme="dark"] {
-    --bg-primary-rgb: 17, 17, 17;
-    --bg-secondary-rgb: 8, 8, 8;
-    --accent-rgb: 168, 85, 247;
-    --accent-hover: #9333ea;
-    --fav-rgb: 250, 204, 21;
-    --icon-hue-rotate: 240deg;
-}
-
-/* Ocean — deep navy + cyan */
-[data-theme="ocean"] {
-    --bg-primary-rgb: 10, 22, 40;
-    --bg-secondary-rgb: 6, 14, 26;
-    --accent-rgb: 34, 211, 238;
-    --accent-hover: #06b6d4;
-    --fav-rgb: 250, 204, 21;
-    --icon-hue-rotate: 157deg;
-}
-
-/* Forest — dark green + lime */
-[data-theme="forest"] {
-    --bg-primary-rgb: 13, 31, 13;
-    --bg-secondary-rgb: 8, 20, 8;
-    --accent-rgb: 74, 222, 128;
-    --accent-hover: #22c55e;
-    --fav-rgb: 250, 204, 21;
-    --icon-hue-rotate: 111deg;
-}
-
-/* Crimson — dark + red */
-[data-theme="crimson"] {
-    --bg-primary-rgb: 26, 8, 8;
-    --bg-secondary-rgb: 18, 4, 4;
-    --accent-rgb: 239, 68, 68;
-    --accent-hover: #dc2626;
-    --fav-rgb: 250, 204, 21;
-    --icon-hue-rotate: -31deg;
-}
-
-/* Sunset — dark purple + pink */
-[data-theme="sunset"] {
-    --bg-primary-rgb: 26, 10, 26;
-    --bg-secondary-rgb: 18, 6, 18;
-    --accent-rgb: 244, 114, 182;
-    --accent-hover: #ec4899;
-    --fav-rgb: 250, 204, 21;
-    --icon-hue-rotate: 298deg;
-}
-
-/* ==========================================================================
-   BASE STYLES
-   ========================================================================== */
-
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    background-color: var(--bg-primary);
-    transition: background-color 0.3s ease;
+    background-color: #182a69;
 }
 
 h1 {
-    color: var(--accent);
+    color: #e69138;
     font-family: 'Unbounded', sans-serif;
-    font-weight: 800;
+    font-weight: 800; /* Extra bold */
 }
 
-p {
-    color: rgba(var(--accent-rgb), 0.85);
+p{
+    color: #e6a158;
     font-family: 'jetbrains mono', monospace;
 }
 
@@ -118,6 +35,7 @@ p {
     align-items: center;
 }
 
+/* Forces Favorites, Recent, and Refresh into precise squares with rounded borders */
 #quick-controls .quick-btn {
     height: 42px;
     padding: 0 16px;
@@ -130,29 +48,31 @@ p {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    border-radius: 8px;
+    border-radius: 8px; /* Clean square rounded edges */
 }
 
+/* Specific button theme accenting overrides */
 #quick-controls .fav-btn {
-    border: 1px solid rgba(var(--fav-rgb), 0.6);
-    color: var(--fav);
+    border: 1px solid rgba(255, 202, 40, 0.6);
+    color: #ffca28;
 }
 #quick-controls .fav-btn:hover {
-    background: rgba(var(--fav-rgb), 0.15);
-    border-color: var(--fav);
+    background: rgba(255, 202, 40, 0.15);
+    border-color: #ffca28;
     transform: translateY(-1px);
 }
 
 #quick-controls .recent-btn {
-    border: 1px solid rgba(var(--accent-rgb), 0.6);
-    color: var(--accent);
+    border: 1px solid rgba(230, 145, 56, 0.6);
+    color: #e69138;
 }
 #quick-controls .recent-btn:hover {
-    background: rgba(var(--accent-rgb), 0.2);
-    border-color: var(--accent);
+    background: rgba(230, 145, 56, 0.2);
+    border-color: #e69138;
     transform: translateY(-1px);
 }
 
+/* Ensure the standard folder layout styling below search bar stays centered */
 #categories-container {
     margin-top: 15px;
 }
@@ -175,7 +95,7 @@ p {
 }
 
 #search-input:focus {
-    border-color: var(--accent);
+    border-color: rgb(230, 145, 56);
     background: rgba(255, 255, 255, 0.16);
 }
 
@@ -197,10 +117,10 @@ p {
 }
 
 .game-item {
-    background-color: var(--accent);
+    background-color: #e69138;
     border-radius: 8px;
     padding: 0;
-    box-shadow: 0 2px 5px rgba(var(--accent-rgb), 0.6);
+    box-shadow: 0 2px 5px rgba(230, 145, 56, 0.6);
     transition: transform 0.2s;
     cursor: pointer;
     position: relative;
@@ -221,8 +141,6 @@ p {
     position: absolute;
     top: 0;
     left: 0;
-    filter: hue-rotate(var(--icon-hue-rotate));
-    transition: filter 0.4s ease;
 }
 
 .game-item h3 {
@@ -230,8 +148,8 @@ p {
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(var(--accent-rgb), 0.6);
-    color: var(--bg-primary);
+    background: rgba(230, 145, 56, 0.6);
+    color: #182a69;
     text-align: center;
     padding: 5px;
     margin: 0;
@@ -250,13 +168,13 @@ p {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: var(--bg-primary);
+    background-color: #182a69;
     z-index: 1000;
 }
 
 #game-controls {
     padding: 10px;
-    background-color: var(--bg-primary);
+    background-color: #182a69;
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -265,8 +183,8 @@ p {
 
 #game-controls button {
     padding: 8px 16px;
-    background-color: var(--accent);
-    color: var(--bg-primary);
+    background-color: #e69138;
+    color: #182a69;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -274,7 +192,7 @@ p {
 }
 
 #game-controls button:hover {
-    background-color: var(--accent-hover);
+    background-color: #c37b2f;
     transform: scale(1.1);
 }
 
@@ -286,8 +204,8 @@ p {
 #categories-container reload {
     padding: 8px 16px;
     background: rgba(255, 255, 255, 0.1);
-    color: var(--accent);
-    border: 1px solid var(--accent);
+    color: #e69138;
+    border: 1px solid #e69138;
     border-radius: 999px;
     cursor: pointer;
     font-family: 'jetbrains mono', monospace;
@@ -296,70 +214,72 @@ p {
 }
 
 #categories-container reload:hover {
-    background: rgba(var(--accent-rgb), 0.2);
-    border-color: var(--accent);
+    background: rgba(230, 145, 56, 0.2);
+    border-color: #e69138;
 }
 
 a {
-    color: var(--accent);
+    color: #d8964e;
     font-size: 24px;
     font-family: 'jetbrains mono', monospace;
 }
 
-/* ==========================================================================
-   MODAL
-   ========================================================================== */
-
+/* Modal Background Overlay (Centered & Blurred) */
 .modal {
-  display: none;
+  display: none; 
   position: fixed;
-  z-index: 2000;
+  z-index: 2000; /* Ensures it sits above game view elements */
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(var(--bg-primary-rgb), 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(24, 42, 105, 0.4); /* Semitransparent theme background */
+  backdrop-filter: blur(8px); /* Blurs the elements behind the modal window */
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
   align-items: center;
   justify-content: center;
 }
 
+/* Modal Box Content */
 .modal-content {
-  background-color: var(--bg-primary);
+  background-color: #182a69; /* Matches body background color */
   padding: 30px;
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.4);
-  border: 2px solid var(--accent);
+  box-shadow: 0 4px 20px rgba(230, 145, 56, 0.4); /* Themed orange shadow glow */
+  border: 2px solid #e69138; /* Orange themed border outline */
   position: relative;
   text-align: left;
   box-sizing: border-box;
 }
 
+/* Modal Title Elements */
 .modal-content h2 {
-  color: var(--accent);
+  color: #e69138;
   font-family: 'Unbounded', sans-serif;
   margin-top: 0;
   font-size: 1.5rem;
 }
 
+/* Divider Rule lines */
 .modal-content hr {
   border: 0;
   height: 1px;
-  background: rgba(var(--accent-rgb), 0.3);
+  background: rgba(230, 145, 56, 0.3);
   margin: 15px 0;
 }
 
+/* Text Element tags inside modal */
 .modal-content label {
-  color: rgba(var(--accent-rgb), 0.9);
+  color: #e6a158;
   font-family: 'jetbrains mono', monospace;
   display: block;
   font-weight: bold;
   margin-bottom: 8px;
 }
 
+/* Input boxes modified to mimic the main game search field design styling */
 .modal-content input[type="text"] {
   width: 100%;
   padding: 10px 14px;
@@ -375,18 +295,20 @@ a {
 }
 
 .modal-content input[type="text"]:focus {
-  border-color: var(--accent);
+  border-color: rgb(230, 145, 56);
 }
 
+/* Modal configuration item wrapper boxes */
 .setting-item {
   margin: 20px 0;
 }
 
+/* Custom styled action buttons matching category selectors */
 .modal-content button {
   padding: 8px 16px;
   background: rgba(255, 255, 255, 0.1);
-  color: var(--accent);
-  border: 1px solid rgba(var(--accent-rgb), 0.5);
+  color: #e69138;
+  border: 1px solid rgba(230, 145, 56, 0.5);
   border-radius: 999px;
   cursor: pointer;
   font-family: 'jetbrains mono', monospace;
@@ -395,19 +317,20 @@ a {
 }
 
 .modal-content button:hover {
-  background: rgba(var(--accent-rgb), 0.2);
-  border-color: var(--accent);
+  background: rgba(230, 145, 56, 0.2);
+  border-color: #e69138;
 }
 
+/* Core action execution buttons */
 .modal-content button.primary-btn {
-  background-color: var(--accent);
-  color: var(--bg-primary);
+  background-color: #e69138;
+  color: #182a69;
   border: none;
   font-weight: bold;
 }
 
 .modal-content button.primary-btn:hover {
-  background-color: var(--accent-hover);
+  background-color: #c37b2f;
 }
 
 .modal-content button.danger-btn {
@@ -421,131 +344,22 @@ a {
   color: #fff;
 }
 
+/* Close Button (X in the top corner) */
 .close-modal {
   position: absolute;
   top: 15px;
   right: 20px;
   font-size: 24px;
-  color: rgba(var(--accent-rgb), 0.85);
+  color: #e6a158;
   cursor: pointer;
   transition: color 0.2s;
 }
 
 .close-modal:hover {
-  color: var(--accent);
+  color: #e69138;
 }
 
-/* ==========================================================================
-   THEME PICKER
-   ========================================================================== */
-
-.theme-grid {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.theme-swatch {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 3px solid transparent;
-    transition: transform 0.2s ease, border-color 0.2s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.theme-swatch:hover {
-    transform: scale(1.15);
-}
-
-.theme-swatch.active {
-    border-color: #fff;
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.4);
-}
-
-.theme-swatch[data-theme="classic"]  { background: linear-gradient(135deg, #182a69 50%, #e69138 50%); }
-.theme-swatch[data-theme="dark"]     { background: linear-gradient(135deg, #111111 50%, #a855f7 50%); }
-.theme-swatch[data-theme="ocean"]    { background: linear-gradient(135deg, #0a1628 50%, #22d3ee 50%); }
-.theme-swatch[data-theme="forest"]   { background: linear-gradient(135deg, #0d1f0d 50%, #4ade80 50%); }
-.theme-swatch[data-theme="crimson"]  { background: linear-gradient(135deg, #1a0808 50%, #ef4444 50%); }
-.theme-swatch[data-theme="sunset"]   { background: linear-gradient(135deg, #1a0a1a 50%, #f472b6 50%); }
-
-.theme-swatch--custom {
-    background: conic-gradient(
-        red 0deg, yellow 60deg, lime 120deg, cyan 180deg, blue 240deg, magenta 300deg, red 360deg
-    );
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    text-shadow: 0 0 3px #000;
-}
-.theme-swatch--custom::after { content: '+'; font-weight: 800; }
-
-/* ==========================================================================
-   CUSTOM COLOR PICKER SECTION
-   ========================================================================== */
-
-.color-picker-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.color-picker-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-}
-
-.color-picker-label {
-    font-family: 'jetbrains mono', monospace;
-    font-size: 12px;
-    color: rgba(var(--accent-rgb), 0.85);
-}
-
-input[type="color"] {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 3px solid rgba(var(--accent-rgb), 0.5);
-    padding: 2px;
-    background: transparent;
-    cursor: pointer;
-    transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-input[type="color"]:hover {
-    border-color: var(--accent);
-    transform: scale(1.1);
-}
-
-input[type="color"]::-webkit-color-swatch-wrapper {
-    padding: 0;
-    border-radius: 50%;
-}
-
-input[type="color"]::-webkit-color-swatch {
-    border: none;
-    border-radius: 50%;
-}
-
-input[type="color"]::-moz-color-swatch {
-    border: none;
-    border-radius: 50%;
-}
-
-/* ==========================================================================
-   TOP BAR
-   ========================================================================== */
-
+/* Position the button wrapper in the top right corner */
 .top-bar {
   position: absolute;
   top: 15px;
@@ -553,12 +367,13 @@ input[type="color"]::-moz-color-swatch {
   z-index: 100;
 }
 
+/* Styled emoji button that blends with your theme */
 .icon-btn {
   font-size: 20px;
   background: rgba(255, 255, 255, 0.1);
-  color: var(--accent);
-  border: 1px solid rgba(var(--accent-rgb), 0.5);
-  border-radius: 50%;
+  color: #e69138;
+  border: 1px solid rgba(230, 145, 56, 0.5);
+  border-radius: 50%; /* Perfect circle */
   width: 42px;
   height: 42px;
   display: flex;
@@ -568,25 +383,23 @@ input[type="color"]::-moz-color-swatch {
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
+/* Subtle clockwise rotation and orange glow on hover */
 .icon-btn:hover {
   transform: scale(1.1);
-  background: rgba(var(--accent-rgb), 0.2);
-  border-color: var(--accent);
+  background: rgba(230, 145, 56, 0.2);
+  border-color: #e69138;
 }
 
-/* ==========================================================================
-   UPDATE WARNING BANNER
-   ========================================================================== */
-
+/* Outdated Version Warning Banner */
 #update-warning-banner {
-    background-color: var(--accent);
-    color: var(--bg-primary);
+    background-color: #e69138; /* Matches your theme orange */
+    color: #182a69;            /* Matches your theme dark blue text */
     padding: 15px 20px;
     text-align: center;
     font-family: 'jetbrains mono', monospace;
-    border-bottom: 3px solid var(--accent-hover);
-    box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.3);
-    z-index: 3000;
+    border-bottom: 3px solid #c37b2f;
+    box-shadow: 0 4px 15px rgba(230, 145, 56, 0.3);
+    z-index: 3000;             /* Sits above top-bar buttons and layout framework */
     position: relative;
     animation: slideDown 0.4s ease-out;
 }
@@ -596,18 +409,15 @@ input[type="color"]::-moz-color-swatch {
     to { transform: translateY(0); }
 }
 
-/* ==========================================================================
-   GAME VIEW CREDITS PANEL
-   ========================================================================== */
-
+/* Game View Credits Panel */
 #game-credits-panel {
-    background-color: var(--bg-secondary);
-    color: rgba(var(--accent-rgb), 0.85);
+    background-color: #142254; /* Slightly darker shade of body blue */
+    color: #e6a158;
     padding: 10px;
     font-family: 'jetbrains mono', monospace;
     font-size: 14px;
     text-align: center;
-    border-top: 1px solid rgba(var(--accent-rgb), 0.3);
+    border-top: 1px solid rgba(230, 145, 56, 0.3);
     position: absolute;
     bottom: 0;
     left: 0;
@@ -617,20 +427,22 @@ input[type="color"]::-moz-color-swatch {
 }
 
 #game-credits-panel strong {
-    color: var(--accent);
+    color: #e69138; /* Accent pop orange */
 }
 
 /* ==========================================================================
-   FULLSCREEN AUTO-HIDE
+   FIXED FULLSCREEN AUTO-HIDE HOVER ELEMENTS
    ========================================================================== */
 
+/* Maximize container view */
 #game-view:fullscreen {
     width: 100vw;
     height: 100vh;
-    background-color: var(--bg-primary);
+    background-color: #182a69;
     overflow: hidden;
 }
 
+/* Force iframe to occupy 100% of the viewport underneath menus */
 #game-view:fullscreen #game-iframe {
     height: 100vh !important;
     position: absolute;
@@ -639,6 +451,7 @@ input[type="color"]::-moz-color-swatch {
     z-index: 1;
 }
 
+/* Position control bars and hide them outside the viewport */
 #game-view:fullscreen #game-controls,
 #game-view:fullscreen #game-credits-panel {
     position: fixed;
@@ -647,7 +460,7 @@ input[type="color"]::-moz-color-swatch {
     z-index: 10;
     transition: transform 0.25s ease-in-out, opacity 0.2s ease;
     box-sizing: border-box;
-    pointer-events: auto;
+    pointer-events: auto; /* Ensures you can click inside them */
 }
 
 #game-view:fullscreen #game-controls {
@@ -664,13 +477,14 @@ input[type="color"]::-moz-color-swatch {
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
 }
 
+/* Create hover zone areas directly using the native element wrappers */
 #game-view:fullscreen::before {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 25px;
+    height: 25px; /* Invisible strip at the absolute top edge */
     z-index: 9;
 }
 
@@ -680,10 +494,11 @@ input[type="color"]::-moz-color-swatch {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 25px;
+    height: 25px; /* Invisible strip at the absolute bottom edge */
     z-index: 9;
 }
 
+/* Smooth slide in rules when hovering near the top or bottom boundaries */
 #game-view:fullscreen:has(> ::before:hover) #game-controls,
 #game-view:fullscreen #game-controls:hover {
     transform: translateY(0);
@@ -701,9 +516,10 @@ input[type="color"]::-moz-color-swatch {
    ========================================================================== */
 
 .game-item {
-    position: relative;
+    position: relative; /* Setup layout context boundaries for star positioning */
 }
 
+/* Base style for the star toggler button */
 .game-item-star-btn {
     height: 42px;
     padding: 0 16px;
@@ -716,42 +532,45 @@ input[type="color"]::-moz-color-swatch {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    border-radius: 999px;
+    border-radius: 999px; /* Clean square rounded edges */
 }
 
+/* Scale up slightly when hovering over the star badge */
 .game-item-star-btn:hover {
     transform: scale(1.15);
     background: rgba(0, 0, 0, 0.7);
     color: #fff;
-    border-color: var(--accent);
+    border-color: #e69138;
 }
 
+/* Active gold state color when a game is favorited */
 .game-item-star-btn.active {
-    color: var(--fav);
-    background: rgba(var(--bg-primary-rgb), 0.8);
-    border-color: var(--fav);
-    text-shadow: 0 0 5px rgba(var(--fav-rgb), 0.5);
+    color: #ffca28; /* Gold color */
+    background: rgba(24, 42, 105, 0.8);
+    border-color: #ffca28;
+    text-shadow: 0 0 5px rgba(255, 202, 40, 0.5);
 }
 
 /* ==========================================================================
-   CATEGORIES CONTAINER
+   2. FIXED FOLDER CATEGORIES (BELOW SEARCH BAR) - RESTORED CSS
    ========================================================================== */
 
 #categories-container {
     max-width: 1000px;
-    margin: 15px auto 15px;
+    margin: 15px auto 15px; /* Adds space separating below the search container */
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
 }
 
+/* Restores the original look for "All" and the individual game genre buttons */
 #categories-container button {
     padding: 8px 16px;
     background: rgba(255, 255, 255, 0.1);
-    color: var(--accent);
-    border: 1px solid rgba(var(--accent-rgb), 0.5);
-    border-radius: 999px;
+    color: #e69138;
+    border: 1px solid rgba(230, 145, 56, 0.5);
+    border-radius: 999px; /* Restores the pill/oval shape */
     cursor: pointer;
     font-family: 'jetbrains mono', monospace;
     font-size: 14px;
@@ -759,28 +578,32 @@ input[type="color"]::-moz-color-swatch {
 }
 
 #categories-container button:hover {
-    background: rgba(var(--accent-rgb), 0.2);
-    border-color: var(--accent);
+    background: rgba(230, 145, 56, 0.2);
+    border-color: #e69138;
+
 }
 
+/* Update your existing search container styling rules to enable flex alignment */
 .search-container {
     max-width: 600px;
     margin: 0 auto 15px;
-    display: flex;
+    display: flex; /* Enables placing elements side-by-side */
     gap: 10px;
     align-items: center;
     box-sizing: border-box;
-    padding: 0 20px;
+    padding: 0 20px; /* Aligns edges beautifully with the rest of the layout rows */
 }
 
+/* Ensure the input takes up the remaining available horizontal space */
 #search-input {
     flex: 1;
-    margin-bottom: 0 !important;
+    margin-bottom: 0 !important; /* Removes any conflicting block margins */
 }
 
+/* Modified targets to account for the new layout position */
 #search-reload-container .reload-btn {
-    height: 42px;
-    width: 42px;
+    height: 42px; /* Matches standard search bar height profile */
+    width: 42px;  /* Square constraints */
     padding: 0;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -788,36 +611,45 @@ input[type="color"]::-moz-color-swatch {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    border-radius: 8px;
-    border: 1px solid rgba(var(--accent-rgb), 0.4);
+    border-radius: 8px; /* Square with rounded edges */
+    border: 1px solid rgba(230, 145, 56, 0.4);
     background: rgba(255, 255, 255, 0.05);
 }
 
 #search-reload-container .reload-btn:hover {
-    background: rgba(var(--accent-rgb), 0.15);
-    border-color: var(--accent);
+    background: rgba(230, 145, 56, 0.15);
+    border-color: #e69138;
+
 }
 
 /* ==========================================================================
-   GAME CARD FAVORITE STAR OVERLAYS
+   GAME CARD FAVORITE STAR ELEMENT OVERLAYS
    ========================================================================== */
 
+/* Crucial: Gives the game container a reference boundary so absolute stars align to it */
 .game-item {
-    position: relative !important;
+    position: relative !important; 
 }
 
+/* Forces the item button container layer above the game icon image grid */
 .game-item .game-item-star-btn {
     position: absolute !important;
     top: 10px !important;
     right: 10px !important;
-    z-index: 99 !important;
+    z-index: 99 !important; /* Forces layer above the image */
+    
+    /* Box Shape Constraints */
     width: 32px !important;
     height: 32px !important;
     padding: 0 !important;
-    border-radius: 50% !important;
+    border-radius: 50% !important; /* Circular boundary */
+    
+    /* Theme Color Accenting */
     background: rgba(0, 0, 0, 0.6) !important;
     border: 1px solid rgba(255, 255, 255, 0.25) !important;
     color: rgba(255, 255, 255, 0.7) !important;
+    
+    /* Typography Typography Centering alignments */
     font-size: 18px !important;
     line-height: 1 !important;
     display: flex !important;
@@ -827,56 +659,19 @@ input[type="color"]::-moz-color-swatch {
     transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease !important;
 }
 
+/* Interactive Hover Trigger Glow State modifications */
 .game-item:hover .game-item-star-btn,
 .game-item-star-btn:hover {
     transform: scale(1.05);
     background: rgba(0, 0, 0, 0.85) !important;
-    border-color: var(--accent) !important;
+    border-color: #e69138 !important;
     color: #fff !important;
 }
 
+/* Active State layout styles if the underlying entry database flags it as true */
 .game-item-star-btn.active {
-    color: var(--fav) !important;
-    background: rgba(var(--bg-primary-rgb), 0.85) !important;
-    border-color: var(--fav) !important;
-    box-shadow: 0 0 8px rgba(var(--fav-rgb), 0.4) !important;
-}
-
-/* ==========================================================================
-   CUSTOM SEARCH BAR CLEAR BUTTON
-   ========================================================================== */
-
-#search-input::-webkit-search-cancel-button {
-    -webkit-appearance: none;
-    appearance: none;
-}
-
-#search-input {
-    padding-right: 40px !important;
-}
-
-#clear-search-btn {
-    position: absolute;
-    top: 50%;
-    right: 12px;
-    transform: translateY(-50%);
-    background: transparent;
-    border: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    z-index: 5;
-}
-
-#clear-search-btn:hover {
-    transform: translateY(-50%) scale(1.1);
-}
-
-#clear-search-btn img {
-    display: block;
-    pointer-events: none;
+    color: #ffca28 !important; /* Deep vibrant gold yellow text character format */
+    background: rgba(24, 42, 105, 0.85) !important; /* Main layout midnight blue */
+    border-color: #ffca28 !important;
+    box-shadow: 0 0 8px rgba(255, 202, 40, 0.4) !important;
 }
