@@ -92,23 +92,119 @@ async function checkProjectVersion() {
 
 const THEMES = ['classic', 'dark', 'ocean', 'forest', 'crimson', 'sunset'];
 
-function applyTheme(theme) {
-    if (!THEMES.includes(theme)) theme = 'classic';
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('selectedTheme', theme);
+function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `${r}, ${g}, ${b}`;
+}
 
+function darkenHex(hex, factor = 0.75) {
+    const r = Math.round(parseInt(hex.slice(1, 3), 16) * factor);
+    const g = Math.round(parseInt(hex.slice(3, 5), 16) * factor);
+    const b = Math.round(parseInt(hex.slice(5, 7), 16) * factor);
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+function updateSwatchActive(theme) {
     document.querySelectorAll('.theme-swatch').forEach(swatch => {
         swatch.classList.toggle('active', swatch.dataset.theme === theme);
     });
 }
 
+function clearCustomVars() {
+    const root = document.documentElement;
+    ['--bg-primary-rgb', '--bg-secondary-rgb', '--accent-rgb', '--accent-hover', '--fav-rgb', '--bg-primary', '--bg-secondary', '--accent', '--fav'].forEach(v => {
+        root.style.removeProperty(v);
+    });
+}
+
+function applyTheme(theme) {
+    if (!THEMES.includes(theme)) theme = 'classic';
+    clearCustomVars();
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('selectedTheme', theme);
+    localStorage.removeItem('customBg');
+    localStorage.removeItem('customAccent');
+    updateSwatchActive(theme);
+}
+
+function applyCustomTheme(bgHex, accentHex) {
+    const root = document.documentElement;
+    const bgRgb = hexToRgb(bgHex);
+    const accentRgb = hexToRgb(accentHex);
+
+    const bgParts = bgRgb.split(', ').map(Number);
+    const bgSecRgb = bgParts.map(c => Math.max(0, Math.round(c * 0.82))).join(', ');
+
+    root.setAttribute('data-theme', 'custom');
+    root.style.setProperty('--bg-primary-rgb', bgRgb);
+    root.style.setProperty('--bg-secondary-rgb', bgSecRgb);
+    root.style.setProperty('--accent-rgb', accentRgb);
+    root.style.setProperty('--accent-hover', darkenHex(accentHex));
+    root.style.setProperty('--fav-rgb', '255, 202, 40');
+    root.style.setProperty('--bg-primary', `rgb(${bgRgb})`);
+    root.style.setProperty('--bg-secondary', `rgb(${bgSecRgb})`);
+    root.style.setProperty('--accent', `rgb(${accentRgb})`);
+    root.style.setProperty('--fav', 'rgb(255, 202, 40)');
+
+    localStorage.setItem('selectedTheme', 'custom');
+    localStorage.setItem('customBg', bgHex);
+    localStorage.setItem('customAccent', accentHex);
+
+    const swatch = document.getElementById('custom-swatch');
+    if (swatch) {
+        swatch.style.background = `linear-gradient(135deg, ${bgHex} 50%, ${accentHex} 50%)`;
+    }
+
+    updateSwatchActive('custom');
+}
+
 function loadSavedTheme() {
     const saved = localStorage.getItem('selectedTheme') || 'classic';
-    applyTheme(saved);
+    if (saved === 'custom') {
+        const bg = localStorage.getItem('customBg') || '#182a69';
+        const accent = localStorage.getItem('customAccent') || '#e69138';
+        document.getElementById('custom-bg-color').value = bg;
+        document.getElementById('custom-accent-color').value = accent;
+        applyCustomTheme(bg, accent);
+    } else {
+        applyTheme(saved);
+    }
 }
 
 document.querySelectorAll('.theme-swatch').forEach(swatch => {
-    swatch.addEventListener('click', () => applyTheme(swatch.dataset.theme));
+    swatch.addEventListener('click', () => {
+        if (swatch.dataset.theme === 'custom') {
+            const bg = document.getElementById('custom-bg-color').value;
+            const accent = document.getElementById('custom-accent-color').value;
+            applyCustomTheme(bg, accent);
+        } else {
+            applyTheme(swatch.dataset.theme);
+        }
+    });
+});
+
+document.getElementById('apply-custom-theme-btn').addEventListener('click', () => {
+    const bg = document.getElementById('custom-bg-color').value;
+    const accent = document.getElementById('custom-accent-color').value;
+    applyCustomTheme(bg, accent);
+});
+
+document.getElementById('custom-bg-color').addEventListener('input', () => {
+    if (localStorage.getItem('selectedTheme') === 'custom') {
+        const bg = document.getElementById('custom-bg-color').value;
+        const accent = document.getElementById('custom-accent-color').value;
+        applyCustomTheme(bg, accent);
+    }
+});
+
+document.getElementById('custom-accent-color').addEventListener('input', () => {
+    if (localStorage.getItem('selectedTheme') === 'custom') {
+        const bg = document.getElementById('custom-bg-color').value;
+        const accent = document.getElementById('custom-accent-color').value;
+        applyCustomTheme(bg, accent);
+    }
 });
 
 loadSavedTheme();
