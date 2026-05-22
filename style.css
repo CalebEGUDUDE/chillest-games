@@ -675,3 +675,45 @@ a {
     border-color: #ffca28 !important;
     box-shadow: 0 0 8px rgba(255, 202, 40, 0.4) !important;
 }
+
+/* ==========================================================================
+   CUSTOM SEARCH BAR CLEAR BUTTON OVERLAYS
+   ========================================================================== */
+
+/* Hide standard native browser clear widgets across Chrome/Safari/Edge */
+#search-input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* Ensure the input leaves right-side horizontal breathing space padding for our icon button overlay */
+#search-input {
+    padding-right: 40px !important;
+}
+
+/* Positions your image button cleanly into the right side of the input box field */
+#clear-search-btn {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 5;
+}
+
+#clear-search-btn:hover {
+    transform: translateY(-50%) scale(1.1); /* Subtle grow pop animation effect */
+}
+
+#clear-search-btn img {
+    display: block;
+    pointer-events: none; /* Prevents clicks from failing on the raw image element node */
+}

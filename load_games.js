@@ -639,14 +639,37 @@ document.getElementById('close-btn').addEventListener('click', () => {
     document.getElementById('games-grid').style.display = 'grid';
 });
 
+// Target the new clear button DOM element
+const clearSearchBtn = document.getElementById('clear-search-btn');
+
 if (searchInput) {
     searchInput.addEventListener('input', event => {
         const query = event.target.value;
+        
+        // Easter egg route handler shortcut triggers
         if (query.toLowerCase().trim() === 'never gonna give you up') {
             window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
             return;
         }
+        
+        // DYNAMIC TOGGLE: Show custom X clear button only if there is text present
+        if (clearSearchBtn) {
+            clearSearchBtn.style.display = query.trim().length > 0 ? 'flex' : 'none';
+        }
+        
         filterGames(query);
+    });
+}
+
+// CLICK INTERACTION: Clicking X clears everything out and updates the active layout folder filter
+if (clearSearchBtn) {
+    clearSearchBtn.addEventListener('click', () => {
+        if (searchInput) {
+            searchInput.value = ''; // Wipe search box text input field values
+            searchInput.focus();    // Keeps cursor active inside field seamlessly
+            filterGames('');        // Refreshes view back to raw active grid elements
+        }
+        clearSearchBtn.style.display = 'none'; // Re-hide itself until user types again
     });
 }
 
