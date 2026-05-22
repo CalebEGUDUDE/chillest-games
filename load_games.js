@@ -29,7 +29,7 @@ const customIconInput = document.getElementById('custom-icon');
 // ==========================================
 // VERSION CHECKER
 // ==========================================
-const CURRENT_VERSION = "1.0.7"; 
+/*const CURRENT_VERSION = "1.0.7"; 
 
 async function checkProjectVersion() {
     try {
@@ -40,7 +40,6 @@ async function checkProjectVersion() {
         const remoteVersion = data.version;
 
         if (!remoteVersion) return;
-
         const parseVersion = (v) => v.split('.').map(Number);
         const localParts = parseVersion(CURRENT_VERSION);
         const remoteParts = parseVersion(remoteVersion);
@@ -85,7 +84,7 @@ async function checkProjectVersion() {
     } catch (error) {
         console.warn('Unable to complete remote version validation check:', error);
     }
-}
+}*/
 
 // ==========================================
 // TAB CLOAK LOGIC
