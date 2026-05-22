@@ -10,6 +10,7 @@
     --accent-rgb: 230, 145, 56;
     --accent-hover: #c37b2f;
     --fav-rgb: 255, 202, 40;
+    --icon-hue-rotate: 0deg;
 
     --bg-primary: rgb(var(--bg-primary-rgb));
     --bg-secondary: rgb(var(--bg-secondary-rgb));
@@ -24,6 +25,7 @@
     --accent-rgb: 230, 145, 56;
     --accent-hover: #c37b2f;
     --fav-rgb: 255, 202, 40;
+    --icon-hue-rotate: 0deg;
 }
 
 /* Dark — near-black + purple */
@@ -33,6 +35,7 @@
     --accent-rgb: 168, 85, 247;
     --accent-hover: #9333ea;
     --fav-rgb: 250, 204, 21;
+    --icon-hue-rotate: 240deg;
 }
 
 /* Ocean — deep navy + cyan */
@@ -42,6 +45,7 @@
     --accent-rgb: 34, 211, 238;
     --accent-hover: #06b6d4;
     --fav-rgb: 250, 204, 21;
+    --icon-hue-rotate: 157deg;
 }
 
 /* Forest — dark green + lime */
@@ -51,6 +55,7 @@
     --accent-rgb: 74, 222, 128;
     --accent-hover: #22c55e;
     --fav-rgb: 250, 204, 21;
+    --icon-hue-rotate: 111deg;
 }
 
 /* Crimson — dark + red */
@@ -60,6 +65,7 @@
     --accent-rgb: 239, 68, 68;
     --accent-hover: #dc2626;
     --fav-rgb: 250, 204, 21;
+    --icon-hue-rotate: -31deg;
 }
 
 /* Sunset — dark purple + pink */
@@ -69,6 +75,7 @@
     --accent-rgb: 244, 114, 182;
     --accent-hover: #ec4899;
     --fav-rgb: 250, 204, 21;
+    --icon-hue-rotate: 298deg;
 }
 
 /* ==========================================================================
@@ -214,6 +221,8 @@ p {
     position: absolute;
     top: 0;
     left: 0;
+    filter: hue-rotate(var(--icon-hue-rotate));
+    transition: filter 0.4s ease;
 }
 
 .game-item h3 {

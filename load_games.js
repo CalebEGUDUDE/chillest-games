@@ -99,6 +99,21 @@ function hexToRgb(hex) {
     return `${r}, ${g}, ${b}`;
 }
 
+function hexToHue(hex) {
+    let r = parseInt(hex.slice(1, 3), 16) / 255;
+    let g = parseInt(hex.slice(3, 5), 16) / 255;
+    let b = parseInt(hex.slice(5, 7), 16) / 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b), delta = max - min;
+    if (delta === 0) return 0;
+    let h;
+    if (max === r) h = ((g - b) / delta) % 6;
+    else if (max === g) h = (b - r) / delta + 2;
+    else h = (r - g) / delta + 4;
+    h = h * 60;
+    if (h < 0) h += 360;
+    return h;
+}
+
 function darkenHex(hex, factor = 0.75) {
     const r = Math.round(parseInt(hex.slice(1, 3), 16) * factor);
     const g = Math.round(parseInt(hex.slice(3, 5), 16) * factor);
@@ -114,7 +129,7 @@ function updateSwatchActive(theme) {
 
 function clearCustomVars() {
     const root = document.documentElement;
-    ['--bg-primary-rgb', '--bg-secondary-rgb', '--accent-rgb', '--accent-hover', '--fav-rgb', '--bg-primary', '--bg-secondary', '--accent', '--fav'].forEach(v => {
+    ['--bg-primary-rgb', '--bg-secondary-rgb', '--accent-rgb', '--accent-hover', '--fav-rgb', '--bg-primary', '--bg-secondary', '--accent', '--fav', '--icon-hue-rotate'].forEach(v => {
         root.style.removeProperty(v);
     });
 }
@@ -147,6 +162,11 @@ function applyCustomTheme(bgHex, accentHex) {
     root.style.setProperty('--bg-secondary', `rgb(${bgSecRgb})`);
     root.style.setProperty('--accent', `rgb(${accentRgb})`);
     root.style.setProperty('--fav', 'rgb(255, 202, 40)');
+
+    const BASE_HUE = 31;
+    const accentHue = hexToHue(accentHex);
+    const hueRotation = Math.round(accentHue - BASE_HUE);
+    root.style.setProperty('--icon-hue-rotate', `${hueRotation}deg`);
 
     localStorage.setItem('selectedTheme', 'custom');
     localStorage.setItem('customBg', bgHex);
