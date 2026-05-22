@@ -87,6 +87,33 @@ async function checkProjectVersion() {
 }*/
 
 // ==========================================
+// THEME LOGIC
+// ==========================================
+
+const THEMES = ['classic', 'dark', 'ocean', 'forest', 'crimson', 'sunset'];
+
+function applyTheme(theme) {
+    if (!THEMES.includes(theme)) theme = 'classic';
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('selectedTheme', theme);
+
+    document.querySelectorAll('.theme-swatch').forEach(swatch => {
+        swatch.classList.toggle('active', swatch.dataset.theme === theme);
+    });
+}
+
+function loadSavedTheme() {
+    const saved = localStorage.getItem('selectedTheme') || 'classic';
+    applyTheme(saved);
+}
+
+document.querySelectorAll('.theme-swatch').forEach(swatch => {
+    swatch.addEventListener('click', () => applyTheme(swatch.dataset.theme));
+});
+
+loadSavedTheme();
+
+// ==========================================
 // TAB CLOAK LOGIC
 // ==========================================
 
@@ -187,7 +214,8 @@ const importSettingsFile = document.getElementById('import-settings-file');
 exportSettingsBtn.addEventListener('click', () => {
     const configData = {
         cloakTitle: localStorage.getItem('cloakTitle') || '',
-        cloakIcon: localStorage.getItem('cloakIcon') || ''
+        cloakIcon: localStorage.getItem('cloakIcon') || '',
+        selectedTheme: localStorage.getItem('selectedTheme') || 'classic'
     };
 
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configData, null, 2));
@@ -212,7 +240,7 @@ importSettingsFile.addEventListener('change', (event) => {
         try {
             const parsedConfig = JSON.parse(e.target.result);
             
-            if ('cloakTitle' in parsedConfig || 'cloakIcon' in parsedConfig) {
+            if ('cloakTitle' in parsedConfig || 'cloakIcon' in parsedConfig || 'selectedTheme' in parsedConfig) {
                 const titleVal = parsedConfig.cloakTitle || '';
                 const iconVal = parsedConfig.cloakIcon || '';
 
@@ -220,6 +248,10 @@ importSettingsFile.addEventListener('change', (event) => {
 
                 customTitleInput.value = titleVal;
                 customIconInput.value = iconVal;
+
+                if (parsedConfig.selectedTheme) {
+                    applyTheme(parsedConfig.selectedTheme);
+                }
 
                 alert('Configuration profile imported successfully!');
             } else {
