@@ -771,4 +771,4 @@ function findCategoryByGameFile(gameName) {
 checkSavedCloak(); 
 loadSplashText();
 loadCategories();
-checkProjectVersion();
+// checkProjectVersion(); - way too anoying gaf about it now
