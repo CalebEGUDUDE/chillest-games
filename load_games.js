@@ -276,6 +276,8 @@ function filterGames(query) {
     noResults.style.display = visibleCount === 0 ? 'block' : 'none';
 }
 
+// ... (Your top-level code remains exactly the same)
+
 async function loadCategories() {
     try {
         const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/games`);
@@ -284,7 +286,8 @@ async function loadCategories() {
         }
 
         const data = await response.json();
-        const categories = data.filter(item => item.type === 'dir').map(item => item.name);
+        // MODIFIED: Exclude the "Pin" folder from standard categories list so it doesn't render a button
+        const categories = data.filter(item => item.type === 'dir' && item.name !== 'Pin').map(item => item.name);
         allCategories = categories;
 
         // Target both layout containers
@@ -320,8 +323,6 @@ async function loadCategories() {
         });
         if (quickControls) quickControls.appendChild(recentButton);
 
-        // ... inside async function loadCategories() ...
-        
         // 3. Add "Reload" Button logic
         const reloadButton = document.createElement('button'); 
         const reloadImg = document.createElement('img');
@@ -363,14 +364,11 @@ async function loadCategories() {
         });
         reloadButton.appendChild(reloadImg);
         
-        // MODIFIED: Append to the search bar container instead of quickControls
         const searchReloadContainer = document.getElementById('search-reload-container');
         if (searchReloadContainer) {
-            searchReloadContainer.innerHTML = ''; // Clean up past renders
+            searchReloadContainer.innerHTML = ''; 
             searchReloadContainer.appendChild(reloadButton);
         }
-
-        // ... rest of the loadCategories() function continues as before ...
 
         // 4. Add the default "All" Button to standard Categories Container (Below Search Bar)
         const allButton = document.createElement('button');
@@ -410,63 +408,80 @@ async function loadCategories() {
     }
 }
 
-async function loadGames(category) {
+async function loadAllGames() {
     const wasAlreadyReloading = isReloading;
     isReloading = true;
 
-    if (!category) {
-        console.error("loadGames failed: 'category' parameter is missing.");
-        gamesGrid.innerHTML = '<p>Error: No category provided.</p>';
-        if (!wasAlreadyReloading) isReloading = false;
-        return;
-    }
-
     try {
-        const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/games/${category}`;
-        const response = await fetch(apiUrl);
-        
-        if (!response.ok) {
-            throw new Error(`GitHub API returned status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const gameFiles = data.filter(item => item.type === 'file' && item.name.endsWith('.html'));
-
-        allGameItems = []; 
+        allGameItems = [];
         gamesGrid.innerHTML = ''; 
+        const pinnedGameNames = new Set();
 
-        for (const item of gameFiles) {
-            const gameFile = item.name;
-            const gameName = gameFile.slice(0, -5);
-            const prettyName = gameName.replace(/[-_]/g, ' ');
-            const gameUrl = `${basePagesUrl}games/${category}/${gameFile}`;
-            const iconUrl = `${baseRawUrl}icons/${gameName}.png`;
+        // MODIFIED: Fetch and display pinned games from the "Pin" category first
+        try {
+            const pinResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/games/Pin`);
+            if (pinResponse.ok) {
+                const pinData = await pinResponse.json();
+                const pinnedFiles = pinData.filter(item => item.type === 'file' && item.name.endsWith('.html'));
 
-            const gameItem = createGameItem(prettyName, iconUrl, () => loadGame(gameUrl, gameFile), gameName);
-            
-            allGameItems.push({ 
-                gameName: gameName.toLowerCase(), 
-                prettyName: prettyName.toLowerCase(), 
-                element: gameItem 
-            });
+                for (const item of pinnedFiles) {
+                    const gameFile = item.name;
+                    const gameName = gameFile.slice(0, -5);
+                    const prettyName = '📌 ' + gameName.replace(/[-_]/g, ' '); // Added a pin icon visual indicator
+                    const gameUrl = `${basePagesUrl}games/Pin/${gameFile}`;
+                    const iconUrl = `${baseRawUrl}icons/${gameName}.png`;
+
+                    const gameItem = createGameItem(prettyName, iconUrl, () => loadGame(gameUrl, gameFile), gameName);
+                    
+                    // Add a special class for styling pinned games if you want to dress them up in CSS
+                    gameItem.classList.add('pinned-game'); 
+
+                    allGameItems.push({ gameName: gameName.toLowerCase(), element: gameItem });
+                    gamesGrid.appendChild(gameItem);
+                    
+                    // Track that this game is pinned so we don't duplicate it down below
+                    pinnedGameNames.add(gameName.toLowerCase());
+                }
+            }
+        } catch (pinErr) {
+            console.warn('No pins found or error fetching pins folder:', pinErr);
         }
 
-        const searchQuery = searchInput ? searchInput.value.trim() : '';
-        if (searchQuery) {
-            filterGames(searchQuery);
-        } else {
-            const fragment = document.createDocumentFragment();
-            allGameItems.forEach(item => fragment.appendChild(item.element));
-            gamesGrid.appendChild(fragment);
+        // Process standard categories
+        for (const category of allCategories) {
+            const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/games/${category}`);
+            if (!response.ok) continue;
+
+            const data = await response.json();
+            const gameFiles = data.filter(item => item.type === 'file' && item.name.endsWith('.html'));
+
+            for (const item of gameFiles) {
+                const gameFile = item.name;
+                const gameName = gameFile.slice(0, -5);
+                
+                // Skip rendering if this game was already pinned to the top
+                if (pinnedGameNames.has(gameName.toLowerCase())) continue;
+
+                const prettyName = gameName.replace(/[-_]/g, ' ');
+                const gameUrl = `${basePagesUrl}games/${category}/${gameFile}`;
+                const iconUrl = `${baseRawUrl}icons/${gameName}.png`;
+
+                const gameItem = createGameItem(prettyName, iconUrl, () => loadGame(gameUrl, gameFile), gameName);
+                allGameItems.push({ gameName: gameName.toLowerCase(), element: gameItem });
+                gamesGrid.appendChild(gameItem);
+            }
         }
 
+        filterGames(searchInput.value || '');
     } catch (error) {
-        console.error('Error loading games:', error);
-        gamesGrid.innerHTML = '<p class="error-msg">Error loading games. Please try again.</p>';
+        console.error('Error loading all games:', error);
+        gamesGrid.innerHTML = '<p>Error loading games.</p>';
     } finally {
-        if (!wasAlreadyReloading) isReloading = false;
+        if (!wasAlreadyReloading) isReloading = false; 
     }
 }
+
+// ... (The rest of your file remains unchanged)
 
 async function loadAllGames() {
     const wasAlreadyReloading = isReloading;
