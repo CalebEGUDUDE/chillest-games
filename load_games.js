@@ -25,6 +25,8 @@ const closeSettingsX = document.getElementById('close-settings-x');
 const saveCloakBtn = document.getElementById('save-cloak-btn');
 const customTitleInput = document.getElementById('custom-title');
 const customIconInput = document.getElementById('custom-icon');
+// Sandbox toggle element (created dynamically and inserted into settings)
+let sandboxToggle = null;
 
 // ==========================================
 // VERSION CHECKER
@@ -136,11 +138,50 @@ function checkSavedCloak() {
     }
 }
 
+// Create and insert the sandbox toggle into the settings UI
+function ensureSandboxToggleExists() {
+    if (sandboxToggle) return; // already created
+
+    const settingsViewEl = document.getElementById('settings-view');
+    if (!settingsViewEl) return;
+
+    const container = document.createElement('div');
+    container.className = 'setting-row sandbox-setting';
+    container.style.display = 'flex';
+    container.style.alignItems = 'center';
+    container.style.gap = '8px';
+    container.style.marginTop = '8px';
+
+    const label = document.createElement('label');
+    label.htmlFor = 'sandbox-toggle';
+    label.textContent = 'Enable iframe scripts';
+    label.style.fontWeight = '600';
+
+    sandboxToggle = document.createElement('input');
+    sandboxToggle.type = 'checkbox';
+    sandboxToggle.id = 'sandbox-toggle';
+
+    // Default: scripts enabled (matches existing behavior)
+    const saved = localStorage.getItem('allowIframeScripts');
+    sandboxToggle.checked = saved === null ? true : (saved === 'true');
+
+    container.appendChild(label);
+    container.appendChild(sandboxToggle);
+
+    // Insert the toggle right before the save button if possible
+    if (saveCloakBtn && saveCloakBtn.parentNode) {
+        saveCloakBtn.parentNode.insertBefore(container, saveCloakBtn);
+    } else {
+        settingsViewEl.appendChild(container);
+    }
+}
+
 // ==========================================
 // SETTINGS WINDOW EVENT INTERACTION
 // ==========================================
 
 settingsBtn.addEventListener('click', () => {
+    ensureSandboxToggleExists();
     gamesGrid.style.display = 'none';
     if(document.getElementById('game-view')) document.getElementById('game-view').style.display = 'none';
     noResults.style.display = 'none';
@@ -172,6 +213,12 @@ saveCloakBtn.addEventListener('click', () => {
     const titleVal = customTitleInput.value.trim();
     const iconVal = customIconInput.value.trim();
     applyCloak(titleVal, iconVal);
+    // Ensure sandbox toggle exists and persist its state
+    ensureSandboxToggleExists();
+    if (sandboxToggle) {
+        localStorage.setItem('allowIframeScripts', sandboxToggle.checked ? 'true' : 'false');
+    }
+
     hideSettingsModal(); 
     alert('Tab Cloak settings successfully deployed!');
 });
@@ -189,6 +236,8 @@ exportSettingsBtn.addEventListener('click', () => {
         cloakTitle: localStorage.getItem('cloakTitle') || '',
         cloakIcon: localStorage.getItem('cloakIcon') || ''
     };
+    // Include sandbox scripts setting in exported profile
+    configData.allowIframeScripts = localStorage.getItem('allowIframeScripts') || 'true';
 
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configData, null, 2));
     const downloadAnchor = document.createElement('a');
@@ -212,14 +261,24 @@ importSettingsFile.addEventListener('change', (event) => {
         try {
             const parsedConfig = JSON.parse(e.target.result);
             
-            if ('cloakTitle' in parsedConfig || 'cloakIcon' in parsedConfig) {
+            if ('cloakTitle' in parsedConfig || 'cloakIcon' in parsedConfig || 'allowIframeScripts' in parsedConfig) {
                 const titleVal = parsedConfig.cloakTitle || '';
                 const iconVal = parsedConfig.cloakIcon || '';
+                const sandboxVal = 'allowIframeScripts' in parsedConfig ? String(parsedConfig.allowIframeScripts) : null;
 
                 applyCloak(titleVal, iconVal);
 
                 customTitleInput.value = titleVal;
                 customIconInput.value = iconVal;
+                if (sandboxVal !== null) {
+                    localStorage.setItem('allowIframeScripts', sandboxVal);
+                }
+
+                // Update toggle UI if it exists
+                ensureSandboxToggleExists();
+                if (sandboxToggle && sandboxVal !== null) {
+                    sandboxToggle.checked = sandboxVal === 'true';
+                }
 
                 alert('Configuration profile imported successfully!');
             } else {
@@ -581,8 +640,11 @@ function loadGame(gameUrl, gameFile) {
     iframe.id = 'game-iframe';
     iframe.frameBorder = '0';
     iframe.style.width = '100%';
-    iframe.style.height = 'calc(100% - 100px)'; 
-    iframe.sandbox = 'allow-scripts allow-same-origin';
+    iframe.style.height = 'calc(100% - 100px)';
+    // Respect user setting for whether iframe scripts are allowed
+    const allowScripts = localStorage.getItem('allowIframeScripts');
+    const scriptsEnabled = allowScripts === null ? true : (allowScripts === 'true');
+    iframe.sandbox = scriptsEnabled ? 'allow-scripts allow-same-origin' : 'allow-same-origin';
     
     const gameView = document.getElementById('game-view');
     gameView.appendChild(iframe);
